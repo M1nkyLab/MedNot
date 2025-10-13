@@ -7,74 +7,214 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:gravity="center_horizontal"
         android:orientation="vertical"
-        android:padding="24dp"
-        android:gravity="center_horizontal">
+        android:padding="24dp">
 
-        <!-- Title -->
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Add Medicine"
-            android:textSize="22sp"
-            android:textStyle="bold"
+            android:layout_marginBottom="24dp"
+            android:text="Add New Medicine"
             android:textColor="#2E7D32"
-            android:layout_marginBottom="24dp" />
+            android:textSize="22sp"
+            android:textStyle="bold" />
 
-        <!-- Medicine Name  -->
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Medication Name"
+            android:textColor="#333333" />
         <EditText
             android:id="@+id/inputMedicineName"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="Medicine Name"
-            android:textColorHint="#9E9E9E"
-            android:textColor="#000000"
-            android:padding="12dp"
             android:layout_marginBottom="16dp"
-            android:background="@android:drawable/edit_text" />
+            android:background="@android:drawable/edit_text"
+            android:hint="e.g., Paracetamol"
+            android:inputType="textCapWords"
+            android:padding="12dp"
+            android:textColor="#000000"
+            android:textColorHint="#9E9E9E" />
 
-        <!-- Dosage -->
-        <EditText
-            android:id="@+id/inputDosage"
+        <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="Dosage (e.g. 2 tablets)"
-            android:textColorHint="#9E9E9E"
-            android:textColor="#000000"
-            android:padding="12dp"
+            android:text="Dosage"
+            android:textColor="#333333" />
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
             android:layout_marginBottom="16dp"
-            android:background="@android:drawable/edit_text" />
+            android:orientation="horizontal">
 
-        <!-- sebelum/selepas makannya Dropdown -->
+            <EditText
+                android:id="@+id/inputDosage"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="8dp"
+                android:layout_weight="1"
+                android:background="@android:drawable/edit_text"
+                android:hint="Amount"
+                android:inputType="numberDecimal"
+                android:padding="12dp" />
+
+            <Spinner
+                android:id="@+id/spinnerDosageUnit"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:minWidth="100dp"
+                android:backgroundTint="#4CAF50"/>
+        </LinearLayout>
+
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Medication Form"
+            android:textColor="#333333" />
+        <Spinner
+            android:id="@+id/spinnerMedicationType"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="16dp"
+            android:minHeight="48dp"
+            android:backgroundTint="#4CAF50"/>
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Instruction"
+            android:textColor="#333333" />
         <Spinner
             android:id="@+id/spinnerEatTime"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="16dp"
-            android:spinnerMode="dropdown"
-            android:popupBackground="#FFFFFF"
-            android:backgroundTint="#4CAF50" />
+            android:minHeight="48dp"
+            android:backgroundTint="#4CAF50"/>
 
-        <!-- time makan ubat  -->
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="How often do you take it?"
+            android:textColor="#333333" />
+        <RadioGroup
+            android:id="@+id/radioGroupScheduleMethod"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <RadioButton
+                android:id="@+id/radioFrequency"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:checked="true"
+                android:text="Frequency" />
+            <RadioButton
+                android:id="@+id/radioInterval"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Interval" />
+        </RadioGroup>
+
+        <LinearLayout
+            android:id="@+id/layoutFrequency"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:visibility="visible">
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Times per day" />
+            <EditText
+                android:id="@+id/inputTimesPerDay"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="e.g., 3"
+                android:inputType="number"
+                android:background="@android:drawable/edit_text"
+                android:padding="12dp"/>
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/layoutInterval"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:visibility="gone">
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Take every... (hours)" />
+            <EditText
+                android:id="@+id/inputIntervalHours"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="e.g., 8"
+                android:inputType="number"
+                android:background="@android:drawable/edit_text"
+                android:padding="12dp"/>
+        </LinearLayout>
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:text="Start Time (First Dose)"
+            android:textColor="#333333" />
         <EditText
             android:id="@+id/inputTime"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="Select Reminder Time"
-            android:textColorHint="#9E9E9E"
-            android:textColor="#000000"
-            android:focusable="false"
-            android:padding="12dp"
+            android:layout_marginBottom="16dp"
             android:background="@android:drawable/edit_text"
-            android:layout_marginBottom="24dp" />
+            android:clickable="true"
+            android:focusable="false"
+            android:hint="Select Reminder Time"
+            android:padding="12dp"
+            android:textColor="#000000"
+            android:textColorHint="#9E9E9E" />
 
-        <!-- Save Button -->
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Duration (in days)"
+            android:textColor="#333333" />
+        <EditText
+            android:id="@+id/inputDuration"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="16dp"
+            android:background="@android:drawable/edit_text"
+            android:hint="0 for continuous"
+            android:inputType="number"
+            android:padding="12dp"
+            android:text="0" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Initial Stock (doses)"
+            android:textColor="#333333" />
+        <EditText
+            android:id="@+id/inputStock"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="24dp"
+            android:background="@android:drawable/edit_text"
+            android:hint="e.g., 60"
+            android:inputType="number"
+            android:padding="12dp"
+            android:text="0" />
+
         <Button
             android:id="@+id/btnSaveMedicine"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Save Medicine"
             android:backgroundTint="#4CAF50"
+            android:text="Save Medicine"
             android:textColor="@android:color/white" />
     </LinearLayout>
 </ScrollView>
