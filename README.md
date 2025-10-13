@@ -1,1 +1,1 @@
-# Medot - Medication Notification Reminder
+# Mednot - Medication Notification Reminder
