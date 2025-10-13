@@ -1,1 +1,1 @@
-# Mednot - Medication Notification Reminder
+# Mednot - Medication Notification Reminder App
