@@ -1,3 +1,31 @@
 <resources>
-    <string name="app_name">Mednot</string>
+    <string name="app_name">MedNot</string>
+
+    <string-array name="dosage_units">
+        <item>mg</item>
+        <item>mcg</item>
+        <item>g</item>
+        <item>ml</item>
+        <item>IU</item>
+        <item>Tablet(s)</item>
+        <item>Capsule(s)</item>
+        <item>Unit(s)</item>
+    </string-array>
+
+    <string-array name="medication_types">
+        <item>Tablet</item>
+        <item>Capsule</item>
+        <item>Liquid</item>
+        <item>Injection</item>
+        <item>Inhaler</item>
+        <item>Topical</item>
+        <item>Other</item>
+    </string-array>
+
+    <string-array name="eat_time_options">
+        <item>No Preference</item>
+        <item>Before Eat</item>
+        <item>After Eat</item>
+        <item>With Food</item>
+    </string-array>
 </resources>
