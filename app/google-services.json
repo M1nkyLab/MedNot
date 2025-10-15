@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "384824835425",
+    "project_id": "mednot-12a60",
+    "storage_bucket": "mednot-12a60.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:384824835425:android:54c3ef7e0d3773932c5920",
+        "android_client_info": {
+          "package_name": "com.example.mednot"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBPl0paCN9x3NnDKfHVGmb9hYdH0-Afd9g"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
