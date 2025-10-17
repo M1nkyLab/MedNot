@@ -1,4 +1,4 @@
-package com.example.mednot
+package com.example.mednot.Auth
 
 import android.content.Intent
 import android.os.Bundle
@@ -7,6 +7,9 @@ import android.widget.EditText
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import com.example.mednot.User.Home
+import com.example.mednot.R
+import com.example.mednot.Auth.Auth_Register
 import com.google.firebase.auth.FirebaseAuth
 
 class Auth_Login : AppCompatActivity() {
@@ -57,7 +60,7 @@ class Auth_Login : AppCompatActivity() {
             }
             // go to reg page when clicked
             tvRegister.setOnClickListener {
-                val intent = Intent(this, RegisterActivity::class.java)
+                val intent = Intent(this, Auth_Register::class.java)
                 startActivity(intent)
             }
         }

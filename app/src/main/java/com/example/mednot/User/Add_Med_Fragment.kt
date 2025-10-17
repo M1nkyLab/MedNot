@@ -1,21 +1,24 @@
-package com.example.mednot
+package com.example.mednot.User
 
 import android.app.TimePickerDialog
 import android.os.Bundle
+import android.view.LayoutInflater
 import android.view.View
+import android.view.ViewGroup
 import android.widget.*
-import androidx.appcompat.app.AppCompatActivity
+import androidx.fragment.app.Fragment
+import com.example.mednot.R
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import java.util.Calendar
 
-class Add_Medicine : AppCompatActivity() {
+class Add_Med_Fragment : Fragment() {
 
     // declare firebase firestore
     private lateinit var firebaseAuth: FirebaseAuth
     private lateinit var db: FirebaseFirestore
 
-    // declare all functional component
+    // declare all functional components
     private lateinit var inputMedicineName: EditText
     private lateinit var inputDosage: EditText
     private lateinit var spinnerDosageUnit: Spinner
@@ -31,56 +34,58 @@ class Add_Medicine : AppCompatActivity() {
     private lateinit var inputStock: EditText
     private lateinit var btnSaveMedicine: Button
 
+    override fun onCreateView(
+        inflater: LayoutInflater, container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View? {
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        setContentView(R.layout.add_medicine)
+        val view = inflater.inflate(R.layout.user_add_medicine_fragment, container, false)
 
-        // initialize firebase firestore
+        // initialize firebase
         firebaseAuth = FirebaseAuth.getInstance()
         db = FirebaseFirestore.getInstance()
 
-        // link all varible with their id (exactly like in xml)
-        inputMedicineName = findViewById(R.id.inputMedicineName)
-        inputDosage = findViewById(R.id.inputDosage)
-        spinnerDosageUnit = findViewById(R.id.spinnerDosageUnit)
-        spinnerMedicationType = findViewById(R.id.spinnerMedicationType)
-        spinnerEatTime = findViewById(R.id.spinnerEatTime)
-        radioGroupScheduleMethod = findViewById(R.id.radioGroupScheduleMethod)
-        layoutFrequency = findViewById(R.id.layoutFrequency)
-        layoutInterval = findViewById(R.id.layoutInterval)
-        inputTimesPerDay = findViewById(R.id.inputTimesPerDay)
-        inputIntervalHours = findViewById(R.id.inputIntervalHours)
-        inputTime = findViewById(R.id.inputTime)
-        inputDuration = findViewById(R.id.inputDuration)
-        inputStock = findViewById(R.id.inputStock)
-        btnSaveMedicine = findViewById(R.id.btnSaveMedicine)
+        // link all variables with their IDs
+        inputMedicineName = view.findViewById(R.id.inputMedicineName)
+        inputDosage = view.findViewById(R.id.inputDosage)
+        spinnerDosageUnit = view.findViewById(R.id.spinnerDosageUnit)
+        spinnerMedicationType = view.findViewById(R.id.spinnerMedicationType)
+        spinnerEatTime = view.findViewById(R.id.spinnerEatTime)
+        radioGroupScheduleMethod = view.findViewById(R.id.radioGroupScheduleMethod)
+        layoutFrequency = view.findViewById(R.id.layoutFrequency)
+        layoutInterval = view.findViewById(R.id.layoutInterval)
+        inputTimesPerDay = view.findViewById(R.id.inputTimesPerDay)
+        inputIntervalHours = view.findViewById(R.id.inputIntervalHours)
+        inputTime = view.findViewById(R.id.inputTime)
+        inputDuration = view.findViewById(R.id.inputDuration)
+        inputStock = view.findViewById(R.id.inputStock)
+        btnSaveMedicine = view.findViewById(R.id.btnSaveMedicine)
 
         setupSpinners()
         setupListeners()
+
+        return view
     }
 
-    // function for dropdown
     private fun setupSpinners() {
-
         // dropdown for dosage units
-        ArrayAdapter.createFromResource(this,
+        ArrayAdapter.createFromResource(requireContext(),
             R.array.dosage_units,
             android.R.layout.simple_spinner_item).also {
             it.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
             spinnerDosageUnit.adapter = it
         }
 
-        //dropdown for medication types
-        ArrayAdapter.createFromResource(this,
+        // dropdown for medication types
+        ArrayAdapter.createFromResource(requireContext(),
             R.array.medication_types,
             android.R.layout.simple_spinner_item).also {
             it.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
             spinnerMedicationType.adapter = it
         }
 
-        // dropdown for what time to eat
-        ArrayAdapter.createFromResource(this,
+        // dropdown for eat time
+        ArrayAdapter.createFromResource(requireContext(),
             R.array.eat_time_options,
             android.R.layout.simple_spinner_item).also {
             it.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
@@ -88,11 +93,8 @@ class Add_Medicine : AppCompatActivity() {
         }
     }
 
-    // function listener
     private fun setupListeners() {
-        // will show time picker dialog when clicked
         inputTime.setOnClickListener { showTimePickerDialog() }
-        // will listen whether freq or interval clicked
         radioGroupScheduleMethod.setOnCheckedChangeListener { _, checkedId ->
             if (checkedId == R.id.radioFrequency) {
                 layoutFrequency.visibility = View.VISIBLE
@@ -102,18 +104,15 @@ class Add_Medicine : AppCompatActivity() {
                 layoutInterval.visibility = View.VISIBLE
             }
         }
-
         btnSaveMedicine.setOnClickListener { saveMedicine() }
     }
 
-    // function time picker dialog
     private fun showTimePickerDialog() {
         val c = Calendar.getInstance()
         val hour = c.get(Calendar.HOUR_OF_DAY)
         val minute = c.get(Calendar.MINUTE)
 
-        TimePickerDialog(this, { _, selectedHour, selectedMinute ->
-            // using formart 12 hour time
+        TimePickerDialog(requireContext(), { _, selectedHour, selectedMinute ->
             val ampm = if (selectedHour < 12) "AM" else "PM"
             val displayHour = if (selectedHour == 0 || selectedHour == 12) 12 else selectedHour % 12
             val timeString = String.format("%02d:%02d %s", displayHour, selectedMinute, ampm)
@@ -121,10 +120,8 @@ class Add_Medicine : AppCompatActivity() {
         }, hour, minute, false).show()
     }
 
-    // function to medicine data to firestore
     private fun saveMedicine() {
         val uid = firebaseAuth.currentUser?.uid
-        // collect all info from all field
         val medicineName = inputMedicineName.text.toString().trim()
         val dosage = inputDosage.text.toString().trim()
         val dosageUnit = spinnerDosageUnit.selectedItem?.toString() ?: ""
@@ -137,13 +134,12 @@ class Add_Medicine : AppCompatActivity() {
         val startTime = inputTime.text.toString().trim()
         val duration = inputDuration.text.toString().trim()
         val stock = inputStock.text.toString().trim()
-        // just too make sure the name isnt empty
+
         if (medicineName.isEmpty()) {
             inputMedicineName.error = "Please enter medicine name"
             return
         }
 
-        // attributes of all data
         val medData = hashMapOf(
             "userId" to uid,
             "medicineName" to medicineName,
@@ -160,20 +156,17 @@ class Add_Medicine : AppCompatActivity() {
             "timestamp" to System.currentTimeMillis()
         )
 
-        // save data to firestore
-        // Class = "medicines"
         db.collection("medicines")
             .add(medData)
             .addOnSuccessListener {
-                Toast.makeText(this, "Medicine saved successfully!", Toast.LENGTH_SHORT).show()
+                Toast.makeText(requireContext(), "Medicine saved successfully!", Toast.LENGTH_SHORT).show()
                 clearInputs()
             }
             .addOnFailureListener { e ->
-                Toast.makeText(this, "Error saving: ${e.message}", Toast.LENGTH_LONG).show()
+                Toast.makeText(requireContext(), "Error saving: ${e.message}", Toast.LENGTH_LONG).show()
             }
     }
 
-    // function to clear all field after success save
     private fun clearInputs() {
         inputMedicineName.text.clear()
         inputDosage.text.clear()

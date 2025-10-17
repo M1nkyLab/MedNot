@@ -15,23 +15,25 @@
         android:theme="@style/Theme.Mednot">
 
         <!-- Check Medicine Stock Page -->
-        <activity android:name=".Check_Med_Stock" />
+        <activity android:name=".User.Check_Med_Stock" />
 
         <!-- View Reminders Page -->
-        <activity android:name=".View_Reminders" />
+        <activity android:name=".User.View_Reminders" />
 
         <!-- Add Medicine Page -->
-        <activity android:name=".Add_Medicine" />
+        <activity android:name=".User.Add_Medicine" />
 
         <!-- Home Page -->
-        <activity android:name=".Home" />
+        <activity android:name=".User.Home" />
 
         <!-- Register Page -->
-        <activity android:name=".RegisterActivity" />
+        <activity android:name=".Auth.Auth_Register" />
+
+
 
         <!-- Login Page (Main Entry Point) -->
         <activity
-            android:name=".Auth_Login"
+            android:name=".Auth.Auth_Login"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
