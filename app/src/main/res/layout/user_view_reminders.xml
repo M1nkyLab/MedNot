@@ -1,41 +1,27 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="#FFFFFF"
-    android:padding="24dp">
+    android:orientation="vertical"
+    android:padding="16dp">
 
-    <!-- Title -->
+    <!-- Page Title -->
     <TextView
         android:id="@+id/tvReminderTitle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignParentTop="true"
-        android:layout_marginBottom="24dp"
-        android:text="Medicine Reminders"
-        android:textColor="#2E7D32"
+        android:text="Your Medicine Reminders"
         android:textSize="22sp"
-        android:textStyle="bold" />
+        android:textStyle="bold"
+        android:textColor="#2E7D32"
+        android:layout_marginBottom="16dp" />
 
-    <!-- Reminder List -->
+    <!-- List of Reminders -->
     <ListView
         android:id="@+id/reminderListView"
         android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_above="@+id/btnAddMedicine"
-        android:layout_below="@id/tvReminderTitle"
-        android:layout_marginBottom="16dp"
+        android:layout_height="wrap_content"
         android:dividerHeight="10dp" />
 
-    <!-- Floating Action Button at the bottom -->
-    <Button
-        android:id="@+id/btnAddMedicine"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:backgroundTint="#4CAF50"
-        android:padding="12dp"
-        android:text="Add New Medicine"
-        android:textColor="@android:color/white" />
-
-</RelativeLayout>
+</LinearLayout>

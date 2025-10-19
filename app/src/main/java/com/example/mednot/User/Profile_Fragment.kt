@@ -13,11 +13,14 @@ import com.example.mednot.Auth.Auth_Login
 import com.example.mednot.R
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.auth.User
 
 class Profile_Fragment : Fragment() {
 
     private lateinit var tvUserName: TextView
     private lateinit var tvUserEmail: TextView
+    private lateinit var btnCheckStock: Button
+    private lateinit var btnViewReminders: Button
     private lateinit var btnSignOut: Button
     private val auth = FirebaseAuth.getInstance()
     private val firestore = FirebaseFirestore.getInstance()
@@ -29,6 +32,8 @@ class Profile_Fragment : Fragment() {
         val view = inflater.inflate(R.layout.user_profile_fragment, container, false)
         tvUserName = view.findViewById(R.id.tvUserName)
         tvUserEmail = view.findViewById(R.id.tvUserEmail)
+        btnViewReminders = view.findViewById(R.id.btnViewReminders)
+        btnCheckStock = view.findViewById(R.id.btnCheckStock)
         btnSignOut = view.findViewById(R.id.btnSignOut)
 
         val currentUser = auth.currentUser
@@ -41,6 +46,16 @@ class Profile_Fragment : Fragment() {
                     val name = document.getString("name") ?: "User"
                     tvUserName.text = name
                 }
+        }
+
+        btnViewReminders.setOnClickListener {
+            val intent = Intent(requireContext(), User_View_Reminders::class.java)
+            startActivity(intent)
+        }
+
+        btnCheckStock.setOnClickListener {
+            val intent = Intent(requireContext(), Check_Med_Stock::class.java)
+            startActivity(intent)
         }
 
         btnSignOut.setOnClickListener {

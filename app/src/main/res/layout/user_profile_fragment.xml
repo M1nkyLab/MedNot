@@ -11,7 +11,7 @@
         android:orientation="vertical"
         android:gravity="center_horizontal">
 
-        <!-- Profile Picture klu nk letak image lah -->
+        <!-- Profile Picture -->
         <ImageView
             android:id="@+id/profileImage"
             android:layout_width="100dp"
@@ -41,6 +41,27 @@
             android:textColor="#6E6E6E"
             android:layout_marginBottom="24dp"/>
 
+        <!-- View Reminders Button -->
+        <Button
+            android:id="@+id/btnViewReminders"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="View Reminders"
+            android:backgroundTint="#4CAF50"
+            android:textColor="#FFFFFF"
+            android:layout_marginBottom="12dp" />
+
+        <!-- Check Medication Stock Button -->
+        <Button
+            android:id="@+id/btnCheckStock"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Check Medication Stock"
+            android:backgroundTint="#2196F3"
+            android:textColor="#FFFFFF"
+            android:layout_marginBottom="24dp" />
+
+        <!-- Sign Out Button -->
         <Button
             android:id="@+id/btnSignOut"
             android:layout_width="match_parent"

@@ -17,17 +17,17 @@
         <!-- Check Medicine Stock Page -->
         <activity android:name=".User.Check_Med_Stock" />
 
-        <!-- View Reminders Page -->
-        <activity android:name=".User.View_Reminders" />
-
-        <!-- Add Medicine Page -->
-        <activity android:name=".User.Add_Medicine" />
-
         <!-- Home Page -->
         <activity android:name=".User.Home" />
 
         <!-- Register Page -->
         <activity android:name=".Auth.Auth_Register" />
+
+        <!-- Check med stock page -->
+        <activity android:name=".User.Check_Med_Stock" />
+
+        <!-- Login Page -->
+        <activity android:name=".User.User_View_Reminders" />
 
 
 

@@ -12,7 +12,7 @@
         android:id="@+id/appTitle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Medicine Reminder"
+        android:text="MedNot"
         android:textSize="26sp"
         android:textStyle="bold"
         android:textColor="#2E7D32"

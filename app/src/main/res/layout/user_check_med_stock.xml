@@ -9,18 +9,20 @@
     <!-- Title -->
     <TextView
         android:id="@+id/tvStockTitle"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="Medicine Stock Tracker"
         android:textSize="22sp"
         android:textStyle="bold"
         android:textColor="#2E7D32"
-        android:layout_marginBottom="24dp" />
+        android:gravity="center"
+        android:layout_marginBottom="16dp" />
 
     <!-- List of Medicines -->
     <ListView
         android:id="@+id/stockListView"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:dividerHeight="10dp" />
+        android:layout_height="match_parent"
+        android:divider="@android:color/darker_gray"
+        android:dividerHeight="1dp" />
 </LinearLayout>
