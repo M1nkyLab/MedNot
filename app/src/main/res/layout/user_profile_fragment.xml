@@ -1,30 +1,52 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:padding="24dp"
-    android:gravity="center_horizontal"
-    android:background="#FFFFFF">
+    android:background="#FFFFFF"
+    android:padding="16dp">
 
-    <!-- User Name -->
-    <TextView
-        android:id="@+id/tvUserName"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="User Name"
-        android:textSize="24sp"
-        android:textStyle="bold"
-        android:layout_marginBottom="32dp"/>
-
-    <!-- Logout Button -->
-    <Button
-        android:id="@+id/btnLogout"
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Logout"
-        android:backgroundTint="#F44336"
-        android:textColor="#FFFFFF"
-        android:padding="12dp"/>
+        android:orientation="vertical"
+        android:gravity="center_horizontal">
 
-</LinearLayout>
+        <!-- Profile Picture klu nk letak image lah -->
+        <ImageView
+            android:id="@+id/profileImage"
+            android:layout_width="100dp"
+            android:layout_height="100dp"
+            android:padding="16dp"
+            android:layout_marginTop="32dp"
+            android:layout_marginBottom="16dp" />
+
+        <!-- User Name -->
+        <TextView
+            android:id="@+id/tvUserName"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="User Name"
+            android:textSize="20sp"
+            android:textStyle="bold"
+            android:textColor="#2E2E2E"
+            android:layout_marginBottom="8dp"/>
+
+        <!-- Email -->
+        <TextView
+            android:id="@+id/tvUserEmail"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="user@email.com"
+            android:textSize="15sp"
+            android:textColor="#6E6E6E"
+            android:layout_marginBottom="24dp"/>
+
+        <Button
+            android:id="@+id/btnSignOut"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Sign Out"
+            android:backgroundTint="#B00020"
+            android:textColor="#FFFFFF" />
+    </LinearLayout>
+</ScrollView>

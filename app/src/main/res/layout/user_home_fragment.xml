@@ -1,15 +1,80 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="#FFFFFF"
     android:padding="16dp">
 
-    <TextView
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_gravity="center"
-        android:text="Home Page"
-        android:textSize="24sp"
-        android:textStyle="bold"/>
-</FrameLayout>
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:gravity="center_horizontal">
+
+        <!-- Welcome Message -->
+        <TextView
+            android:id="@+id/Welcomemessage"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Welcome, User"
+            android:textSize="22sp"
+            android:textStyle="bold"
+            android:textColor="#2E2E2E"
+            android:layout_marginTop="16dp" />
+
+        <!-- Today’s Medicine Card -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:background="@drawable/rounded_card"
+            android:padding="16dp"
+            android:layout_marginBottom="16dp">
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Today's Medicines"
+                android:textStyle="bold"
+                android:textColor="#2E2E2E"
+                android:textSize="18sp"
+                android:layout_marginBottom="8dp" />
+
+            <TextView
+                android:id="@+id/todayMedCount"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="You have 2 medicines to take today."
+                android:textColor="#555555"
+                android:textSize="15sp" />
+        </LinearLayout>
+
+        <!-- Low Stock Card -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:background="@drawable/rounded_card_alert"
+            android:padding="16dp"
+            android:layout_marginBottom="20dp">
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Low Stock Alert"
+                android:textStyle="bold"
+                android:textColor="#B00020"
+                android:textSize="18sp"
+                android:layout_marginBottom="8dp" />
+
+            <TextView
+                android:id="@+id/lowStockCount"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="1 medicine is low on stock"
+                android:textColor="#B00020"
+                android:textSize="15sp" />
+        </LinearLayout>
+
+    </LinearLayout>
+</ScrollView>
