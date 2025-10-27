@@ -1,57 +1,67 @@
 package com.example.mednot.User
 
 import android.os.Bundle
-import android.widget.ListView
-import android.widget.Toast
+import android.widget.LinearLayout
+import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import com.example.mednot.R
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
-import android.widget.SimpleAdapter
 
 class Check_Med_Stock : AppCompatActivity() {
 
-    private lateinit var stockListView: ListView
-    private val firestore = FirebaseFirestore.getInstance()
-    private val auth = FirebaseAuth.getInstance()
+    private lateinit var firebaseAuth: FirebaseAuth
+    private lateinit var db: FirebaseFirestore
+    private lateinit var containerLayout: LinearLayout
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.user_check_med_stock)
 
-        stockListView = findViewById(R.id.stockListView)
+        firebaseAuth = FirebaseAuth.getInstance()
+        db = FirebaseFirestore.getInstance()
 
-        val uid = auth.currentUser?.uid ?: return
-        val stockList = ArrayList<HashMap<String, String>>()
+        containerLayout = findViewById(R.id.containerStockList)
 
-        firestore.collection("users")
-            .document(uid)
-            .collection("medicines")
+        loadMedicines()
+    }
+
+    private fun loadMedicines() {
+        val uid = firebaseAuth.currentUser?.uid ?: return
+
+        db.collection("medicines")
+            .whereEqualTo("userId", uid)
             .get()
-            .addOnSuccessListener { documents ->
-                for (doc in documents) {
-                    val name = doc.getString("name") ?: "Unknown"
-                    val stock = doc.getLong("stock")?.toInt() ?: 0
-
-                    val map = HashMap<String, String>()
-                    map["name"] = name
-                    map["stock"] = "Stock: $stock"
-
-                    stockList.add(map)
+            .addOnSuccessListener { result ->
+                containerLayout.removeAllViews()
+                if (result.isEmpty) {
+                    val emptyText = TextView(this)
+                    emptyText.text = "No medicines found."
+                    emptyText.textSize = 18f
+                    emptyText.setPadding(16, 16, 16, 16)
+                    containerLayout.addView(emptyText)
+                    return@addOnSuccessListener
                 }
 
-                val adapter = SimpleAdapter(
-                    this,
-                    stockList,
-                    R.layout.item_check_med_stock,
-                    arrayOf("name", "stock"),
-                    intArrayOf(R.id.tvMedName, R.id.tvMedStock)
-                )
+                for (doc in result) {
+                    val medName = doc.getString("medicineName") ?: "Unknown"
+                    val stock = doc.getString("stock") ?: "0"
+                    val dosage = doc.getString("dosage") ?: ""
+                    val dosageUnit = doc.getString("dosageUnit") ?: ""
 
-                stockListView.adapter = adapter
+                    val item = TextView(this)
+                    item.text = "$medName — $stock doses left ($dosage $dosageUnit)"
+                    item.textSize = 18f
+                    item.setPadding(16, 16, 16, 16)
+                    containerLayout.addView(item)
+                }
             }
             .addOnFailureListener {
-                Toast.makeText(this, "Failed to load data", Toast.LENGTH_SHORT).show()
+                val errorText = TextView(this)
+                errorText.text = "Failed to load medicines: ${it.message}"
+                errorText.textSize = 16f
+                errorText.setPadding(16, 16, 16, 16)
+                containerLayout.addView(errorText)
             }
     }
 }
