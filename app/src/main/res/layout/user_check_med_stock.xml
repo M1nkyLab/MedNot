@@ -10,15 +10,19 @@
         android:orientation="vertical"
         android:padding="24dp">
 
+        <!-- Centered Title -->
         <TextView
-            android:layout_width="wrap_content"
+            android:id="@+id/tvTitle"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="Medicine Stock"
             android:textColor="#2E7D32"
             android:textSize="22sp"
             android:textStyle="bold"
+            android:gravity="center"
             android:layout_marginBottom="16dp" />
 
+        <!-- Container for medicine cards -->
         <LinearLayout
             android:id="@+id/containerStockList"
             android:layout_width="match_parent"

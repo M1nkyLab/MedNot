@@ -45,15 +45,36 @@ class Check_Med_Stock : AppCompatActivity() {
 
                 for (doc in result) {
                     val medName = doc.getString("medicineName") ?: "Unknown"
-                    val stock = doc.getString("stock") ?: "0"
+                    val quantity = doc.getString("quantity") ?: "0"
+                    val remaining = doc.getString("stock") ?: "0"
                     val dosage = doc.getString("dosage") ?: ""
                     val dosageUnit = doc.getString("dosageUnit") ?: ""
+                    val lastUpdate = doc.getString("lastUpdated") ?: "N/A"
 
-                    val item = TextView(this)
-                    item.text = "$medName — $stock doses left ($dosage $dosageUnit)"
-                    item.textSize = 18f
-                    item.setPadding(16, 16, 16, 16)
-                    containerLayout.addView(item)
+                    // Inflate card layout
+                    val cardView = layoutInflater.inflate(R.layout.item_card_medicine, containerLayout, false)
+
+                    // Bind data
+                    val tvMedName = cardView.findViewById<TextView>(R.id.tvMedName)
+                    val tvQuantity = cardView.findViewById<TextView>(R.id.tvQuantity)
+                    val tvRemaining = cardView.findViewById<TextView>(R.id.tvRemaining)
+                    val tvDosage = cardView.findViewById<TextView>(R.id.tvDosage)
+                    val tvLastUpdated = cardView.findViewById<TextView>(R.id.tvLastUpdated)
+                    val tvLowStock = cardView.findViewById<TextView>(R.id.tvLowStockWarning)
+
+                    tvMedName.text = medName
+                    tvQuantity.text = "Quantity: $quantity"
+                    tvRemaining.text = "Remaining: $remaining"
+                    tvDosage.text = "Dosage: $dosage $dosageUnit"
+                    tvLastUpdated.text = "Last Updated: $lastUpdate"
+
+                    // Low stock warning (threshold e.g. < 10)
+                    val remainingInt = remaining.toIntOrNull() ?: 0
+                    if (remainingInt < 10) {
+                        tvLowStock.visibility = TextView.VISIBLE
+                    }
+
+                    containerLayout.addView(cardView)
                 }
             }
             .addOnFailureListener {
@@ -64,4 +85,6 @@ class Check_Med_Stock : AppCompatActivity() {
                 containerLayout.addView(errorText)
             }
     }
+
 }
+
