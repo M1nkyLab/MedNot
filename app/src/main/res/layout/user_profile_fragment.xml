@@ -1,9 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="#FFFFFF"
-    android:padding="16dp">
+    android:padding="20dp">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -11,35 +12,42 @@
         android:orientation="vertical"
         android:gravity="center_horizontal">
 
-        <!-- Profile Picture -->
-        <ImageView
-            android:id="@+id/profileImage"
-            android:layout_width="100dp"
-            android:layout_height="100dp"
-            android:padding="16dp"
-            android:layout_marginTop="32dp"
-            android:layout_marginBottom="16dp" />
-
-        <!-- User Name -->
-        <TextView
-            android:id="@+id/tvUserName"
-            android:layout_width="wrap_content"
+        <!-- User Info Card -->
+        <androidx.cardview.widget.CardView
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="User Name"
-            android:textSize="20sp"
-            android:textStyle="bold"
-            android:textColor="#2E2E2E"
-            android:layout_marginBottom="8dp"/>
+            android:layout_marginTop="50dp"
+            android:layout_marginBottom="40dp"
+            app:cardCornerRadius="18dp"
+            app:cardElevation="8dp"
+            app:cardBackgroundColor="#5CB483">
 
-        <!-- Email -->
-        <TextView
-            android:id="@+id/tvUserEmail"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="user@email.com"
-            android:textSize="15sp"
-            android:textColor="#6E6E6E"
-            android:layout_marginBottom="24dp"/>
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="24dp"
+                android:gravity="center_horizontal">
+
+                <TextView
+                    android:id="@+id/tvUserName"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="User Name"
+                    android:textSize="22sp"
+                    android:textStyle="bold"
+                    android:textColor="#FFFFFF"
+                    android:layout_marginBottom="6dp"/>
+
+                <TextView
+                    android:id="@+id/tvUserEmail"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="user@email.com"
+                    android:textSize="16sp"
+                    android:textColor="#FFFFFF"/>
+            </LinearLayout>
+        </androidx.cardview.widget.CardView>
 
         <!-- View Reminders Button -->
         <Button
@@ -47,9 +55,12 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="View Reminders"
-            android:backgroundTint="#4CAF50"
+            android:backgroundTint="#2C721A"
             android:textColor="#FFFFFF"
-            android:layout_marginBottom="12dp" />
+            android:layout_marginBottom="18dp"
+            android:paddingVertical="14dp"
+            android:textSize="16sp"
+            android:fontFamily="sans-serif-medium"/>
 
         <!-- Check Medication Stock Button -->
         <Button
@@ -57,9 +68,12 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="Check Medication Stock"
-            android:backgroundTint="#2196F3"
+            android:backgroundTint="#2C721A"
             android:textColor="#FFFFFF"
-            android:layout_marginBottom="24dp" />
+            android:layout_marginBottom="18dp"
+            android:paddingVertical="14dp"
+            android:textSize="16sp"
+            android:fontFamily="sans-serif-medium"/>
 
         <!-- Sign Out Button -->
         <Button
@@ -67,7 +81,10 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="Sign Out"
-            android:backgroundTint="#B00020"
-            android:textColor="#FFFFFF" />
+            android:backgroundTint="#B92E2E"
+            android:textColor="#FFFFFF"
+            android:paddingVertical="14dp"
+            android:textSize="16sp"
+            android:fontFamily="sans-serif-medium"/>
     </LinearLayout>
 </ScrollView>

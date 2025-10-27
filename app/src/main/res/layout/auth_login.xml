@@ -19,20 +19,19 @@
         android:layout_marginBottom="32dp" />
 
     <!-- Email Input -->
-
-    <!-- Password Input -->
     <EditText
         android:id="@+id/inputEmail"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginBottom="16dp"
-        android:background="@android:drawable/edit_text"
+        android:background="@drawable/rounded_edittext"
         android:hint="Email"
         android:inputType="textEmailAddress"
         android:padding="12dp"
         android:textColor="#000000"
         android:textColorHint="#9E9E9E" />
 
+    <!-- Password Input -->
     <EditText
         android:id="@+id/inputPassword"
         android:layout_width="match_parent"
@@ -42,7 +41,7 @@
         android:inputType="textPassword"
         android:padding="12dp"
         android:textColor="#000000"
-        android:background="@android:drawable/edit_text"
+        android:background="@drawable/rounded_edittext"
         android:layout_marginBottom="8dp" />
 
     <!-- Login Button -->
@@ -53,7 +52,7 @@
         android:text="Login"
         android:backgroundTint="#4CAF50"
         android:textColor="@android:color/white"
-        android:layout_marginTop="14dp"/>
+        android:layout_marginTop="14dp" />
 
     <!-- Register Text -->
     <TextView

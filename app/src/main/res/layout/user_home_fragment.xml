@@ -19,24 +19,27 @@
             android:text="Welcome, User"
             android:textSize="22sp"
             android:textStyle="bold"
-            android:textColor="#2E2E2E"
-            android:layout_marginTop="16dp" />
+            android:textColor="#5CB483"
+            android:layout_marginTop="16dp"
+            android:layout_marginBottom="20dp" />
 
         <!-- Today’s Medicine Card -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
+            android:padding="20dp"
             android:background="@drawable/rounded_card"
-            android:padding="16dp"
-            android:layout_marginBottom="16dp">
+            android:layout_marginBottom="16dp"
+            android:radius="12dp"
+            android:elevation="4dp">
 
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="Today's Medicines"
                 android:textStyle="bold"
-                android:textColor="#2E2E2E"
+                android:textColor="#FFFFFF"
                 android:textSize="18sp"
                 android:layout_marginBottom="8dp" />
 
@@ -45,7 +48,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="You have 2 medicines to take today."
-                android:textColor="#555555"
+                android:textColor="#FFFFFF"
                 android:textSize="15sp" />
         </LinearLayout>
 

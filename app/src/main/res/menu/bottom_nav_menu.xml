@@ -7,7 +7,7 @@
 
     <item
         android:id="@+id/nav_add_medicine"
-        android:title="+" />
+        android:title="Add Medicine" />
 
     <item
         android:id="@+id/nav_profile"

@@ -2,163 +2,125 @@
 <ScrollView
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:background="#F5F5F5">
 
     <LinearLayout
         android:orientation="vertical"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="wrap_content"
+        android:padding="24dp">
 
-        <LinearLayout
+        <!-- Title -->
+        <TextView
+            android:id="@+id/tvRegTitle"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:orientation="vertical"
-            android:padding="24dp">
+            android:layout_height="wrap_content"
+            android:text="Register"
+            android:textColor="#2E7D32"
+            android:textSize="36sp"
+            android:gravity="center"
+            android:textStyle="bold"
+            android:layout_marginBottom="16dp" />
 
-            <TextView
-                android:id="@+id/tvRegTitile"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="Register"
-                android:textColor="#2E7D32"
-                android:textSize="36sp"
-                android:gravity="center"
-                android:textStyle="bold" />
+        <!-- Name -->
+        <EditText
+            android:id="@+id/inputName"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Enter your name"
+            android:textColorHint="#9E9E9E"
+            android:inputType="textCapSentences"
+            android:padding="12dp"
+            android:textColor="#000000"
+            android:background="@drawable/rounded_edittext"
+            android:layout_marginTop="4dp"/>
 
-            <TextView
-                android:id="@+id/tvName"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="Enter your name"
-                android:textSize="16dp"
-                android:layout_marginTop="24dp"/>
-            <EditText
-                android:id="@+id/inputName"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:hint="Enter your name"
-                android:textColorHint="#9E9E9E"
-                android:inputType="textCapSentences"
-                android:padding="12dp"
-                android:textColor="#000000"
-                android:background="@android:drawable/edit_text"
-                android:layout_marginTop="4dp"/>
+        <!-- Age -->
+        <EditText
+            android:id="@+id/inputAge"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Enter your age"
+            android:textColorHint="#9E9E9E"
+            android:inputType="number"
+            android:padding="12dp"
+            android:textColor="#000000"
+            android:background="@drawable/rounded_edittext"
+            android:layout_marginTop="12dp"/>
 
-            <TextView
-                android:id="@+id/tvAge"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="Enter your age"
-                android:textSize="16dp"
-                android:layout_marginTop="16dp"/>
-            <EditText
-                android:id="@+id/inputAge"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:hint="Enter your age"
-                android:textColorHint="#9E9E9E"
-                android:inputType="number"
-                android:padding="12dp"
-                android:textColor="#000000"
-                android:background="@android:drawable/edit_text"
-                android:layout_marginTop="4dp"/>
+        <!-- Email -->
+        <EditText
+            android:id="@+id/inputEmail"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Enter your email"
+            android:textColorHint="#9E9E9E"
+            android:inputType="textEmailAddress"
+            android:padding="12dp"
+            android:textColor="#000000"
+            android:background="@drawable/rounded_edittext"
+            android:layout_marginTop="12dp"/>
 
-            <TextView
-                android:id="@+id/tvEmail"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="Enter your email"
-                android:textSize="16dp"
-                android:layout_marginTop="16dp"/>
-            <EditText
-                android:id="@+id/inputEmail"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:hint="Enter your email"
-                android:textColorHint="#9E9E9E"
-                android:inputType="textEmailAddress"
-                android:padding="12dp"
-                android:textColor="#000000"
-                android:background="@android:drawable/edit_text"
-                android:layout_marginTop="4dp"/>
+        <!-- Password -->
+        <EditText
+            android:id="@+id/inputPassword"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Enter your password"
+            android:textColorHint="#9E9E9E"
+            android:inputType="textPassword"
+            android:padding="12dp"
+            android:textColor="#000000"
+            android:background="@drawable/rounded_edittext"
+            android:layout_marginTop="12dp"/>
 
-            <TextView
-                android:id="@+id/tvPassword"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="Enter your password"
-                android:textSize="16dp"
-                android:layout_marginTop="16dp"/>
-            <EditText
-                android:id="@+id/inputPassword"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:hint="Enter your password"
-                android:textColorHint="#9E9E9E"
-                android:inputType="textPassword"
-                android:padding="12dp"
-                android:textColor="#000000"
-                android:background="@android:drawable/edit_text"
-                android:layout_marginTop="4dp"/>
+        <!-- Re-enter Password -->
+        <EditText
+            android:id="@+id/inputRePassword"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Enter your password again"
+            android:textColorHint="#9E9E9E"
+            android:inputType="textPassword"
+            android:padding="12dp"
+            android:textColor="#000000"
+            android:background="@drawable/rounded_edittext"
+            android:layout_marginTop="12dp"/>
 
-            <TextView
-                android:id="@+id/tvRePassword"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="Re-confirm your password"
-                android:textSize="16dp"
-                android:layout_marginTop="16dp"/>
-            <EditText
-                android:id="@+id/inputRePassword"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:hint="Enter your password again"
-                android:textColorHint="#9E9E9E"
-                android:inputType="textPassword"
-                android:padding="12dp"
-                android:textColor="#000000"
-                android:background="@android:drawable/edit_text"
-                android:layout_marginTop="4dp"/>
+        <!-- Emergency Contact -->
+        <EditText
+            android:id="@+id/inputEmerCont"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Enter your emergency contact"
+            android:textColorHint="#9E9E9E"
+            android:inputType="phone"
+            android:padding="12dp"
+            android:textColor="#000000"
+            android:background="@drawable/rounded_edittext"
+            android:layout_marginTop="12dp"/>
 
-            <TextView
-                android:id="@+id/tvEmerCont"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="Enter your emergency contact"
-                android:textSize="16dp"
-                android:layout_marginTop="16dp"/>
-            <EditText
-                android:id="@+id/inputEmerCont"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:hint="Enter your emergency contact"
-                android:textColorHint="#9E9E9E"
-                android:inputType="phone"
-                android:padding="12dp"
-                android:textColor="#000000"
-                android:background="@android:drawable/edit_text"
-                android:layout_marginTop="4dp"/>
+        <!-- Register Button -->
+        <Button
+            android:id="@+id/btnReg"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:backgroundTint="#4CAF50"
+            android:text="Register"
+            android:textColor="@android:color/white"
+            android:layout_marginTop="24dp"
+            android:padding="12dp" />
 
-            <Button
-                android:id="@+id/btnReg"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:backgroundTint="#4CAF50"
-                android:text="Register"
-                android:textColor="@android:color/white"
-                android:layout_marginTop="24dp" />
-
-            <TextView
-                android:id="@+id/loginRedirect"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Already have account? Login"
-                android:textSize="13sp"
-                android:textColor="#88000000"
-                android:layout_marginTop="8dp"
-                android:layout_gravity="center" />
-        </LinearLayout>
-
+        <!-- Redirect to Login -->
+        <TextView
+            android:id="@+id/loginRedirect"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Already have account? Login"
+            android:textSize="13sp"
+            android:textColor="#88000000"
+            android:layout_marginTop="8dp"
+            android:layout_gravity="center" />
     </LinearLayout>
-
 </ScrollView>
