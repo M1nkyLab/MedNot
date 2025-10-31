@@ -1,80 +1,93 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:orientation="vertical"
     android:background="#FFFFFF"
-    android:padding="16dp">
+    android:padding="16dp"
+    tools:context=".User.Home_Fragment">
 
+    <!-- Welcome Message -->
+    <TextView
+        android:id="@+id/Welcomemessage"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Welcome, User"
+        android:textSize="22sp"
+        android:textStyle="bold"
+        android:textColor="#2E2E2E"
+        android:layout_marginBottom="16dp"/>
+
+    <!-- Today’s Medicine Card -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:gravity="center_horizontal">
+        android:padding="16dp"
+        android:layout_marginBottom="16dp">
 
-        <!-- Welcome Message -->
         <TextView
-            android:id="@+id/Welcomemessage"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Welcome, User"
-            android:textSize="22sp"
+            android:text="Today's Medicines"
             android:textStyle="bold"
             android:textColor="#2E2E2E"
-            android:layout_marginTop="16dp" />
+            android:textSize="18sp"
+            android:layout_marginBottom="8dp" />
 
-        <!-- Today’s Medicine Card -->
-        <LinearLayout
+        <TextView
+            android:id="@+id/todayMedCount"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:background="@drawable/rounded_card"
-            android:padding="16dp"
-            android:layout_marginBottom="16dp">
-
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="Today's Medicines"
-                android:textStyle="bold"
-                android:textColor="#2E2E2E"
-                android:textSize="18sp"
-                android:layout_marginBottom="8dp" />
-
-            <TextView
-                android:id="@+id/todayMedCount"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="You have 2 medicines to take today."
-                android:textColor="#555555"
-                android:textSize="15sp" />
-        </LinearLayout>
-
-        <!-- Low Stock Card -->
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:background="@drawable/rounded_card_alert"
-            android:padding="16dp"
-            android:layout_marginBottom="20dp">
-
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="Low Stock Alert"
-                android:textStyle="bold"
-                android:textColor="#B00020"
-                android:textSize="18sp"
-                android:layout_marginBottom="8dp" />
-
-            <TextView
-                android:id="@+id/lowStockCount"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="1 medicine is low on stock"
-                android:textColor="#B00020"
-                android:textSize="15sp" />
-        </LinearLayout>
-
+            android:text="Loading..."
+            android:textColor="#555555"
+            android:textSize="15sp" />
     </LinearLayout>
-</ScrollView>
+
+    <!-- Low Stock Card -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="16dp"
+        android:layout_marginBottom="20dp">
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Low Stock Alert"
+            android:textStyle="bold"
+            android:textColor="#B00020"
+            android:textSize="18sp"
+            android:layout_marginBottom="8dp" />
+
+        <TextView
+            android:id="@+id/lowStockCount"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Loading..."
+            android:textColor="#B00020"
+            android:textSize="15sp" />
+    </LinearLayout>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Your Medicines"
+        android:textSize="18sp"
+        android:textStyle="bold"
+        android:layout_marginBottom="8dp"/>
+
+    <!--
+    THIS IS THE CRITICAL FIX
+    This RecyclerView has the ID that your Kotlin code needs.
+    -->
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/medicinesRecyclerView"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        tools:listitem="@layout/item_medicine" />
+
+</LinearLayout>

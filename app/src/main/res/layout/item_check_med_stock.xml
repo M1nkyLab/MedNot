@@ -3,26 +3,26 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="vertical"
-    android:background="#F8F8F8"
-    android:padding="16dp"
-    android:layout_marginBottom="8dp"
-    android:elevation="2dp">
+    android:padding="16dp">
 
+    <!-- This TextView has the ID 'tvMedName' -->
     <TextView
         android:id="@+id/tvMedName"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Medicine Name"
-        android:textStyle="bold"
         android:textSize="18sp"
-        android:textColor="#000000" />
+        android:textStyle="bold"
+        android:textColor="@android:color/black" />
 
+    <!-- This TextView has the ID 'tvMedStock' -->
     <TextView
         android:id="@+id/tvMedStock"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginTop="4dp"
         android:text="Stock: 0"
         android:textSize="16sp"
-        android:textColor="#555555"
-        android:layout_marginTop="4dp" />
+        android:textColor="@android:color/darker_gray" />
+
 </LinearLayout>

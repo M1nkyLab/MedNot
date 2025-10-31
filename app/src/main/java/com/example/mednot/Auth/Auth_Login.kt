@@ -58,11 +58,11 @@ class Auth_Login : AppCompatActivity() {
                         }
                     }
             }
-            // go to reg page when clicked
-            tvRegister.setOnClickListener {
-                val intent = Intent(this, Auth_Register::class.java)
-                startActivity(intent)
-            }
+        }
+
+        tvRegister.setOnClickListener {
+            val intent = Intent(this, Auth_Register::class.java)
+            startActivity(intent)
         }
     }
 }

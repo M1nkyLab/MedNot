@@ -2,7 +2,23 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
 
+    <!-- 1. ADD ALL REQUIRED PERMISSIONS HERE -->
+
+    <!-- For accessing Firebase and other network services -->
     <uses-permission android:name="android.permission.INTERNET"/>
+
+    <!-- To show notifications on Android 13 (API 33) and higher -->
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
+
+    <!-- To schedule exact alarms, required for reliable reminders -->
+    <uses-permission android:name="android.permission.SCHEDULE_EXACT_ALARM" />
+
+    <!-- An older permission for exact alarms, good practice to include -->
+    <uses-permission android:name="android.permission.USE_EXACT_ALARM" />
+
+    <!-- To reschedule alarms after the device is restarted -->
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
+
 
     <application
         android:allowBackup="true"
@@ -12,26 +28,10 @@
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
-        android:theme="@style/Theme.Mednot">
+        android:theme="@style/Theme.Mednot"
+        tools:targetApi="31">
 
-        <!-- Check Medicine Stock Page -->
-        <activity android:name=".User.Check_Med_Stock" />
-
-        <!-- Home Page -->
-        <activity android:name=".User.Home" />
-
-        <!-- Register Page -->
-        <activity android:name=".Auth.Auth_Register" />
-
-        <!-- Check med stock page -->
-        <activity android:name=".User.Check_Med_Stock" />
-
-        <!-- Login Page -->
-        <activity android:name=".User.User_View_Reminders" />
-
-
-
-        <!-- Login Page (Main Entry Point) -->
+        <!-- Main app entry point -->
         <activity
             android:name=".Auth.Auth_Login"
             android:exported="true">
@@ -40,6 +40,24 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
+        <!-- Other Activities in your application -->
+        <activity android:name=".Auth.Auth_Register" />
+        <activity android:name=".User.Home" />
+        <activity android:name=".User.Check_Med_Stock" />
+        <activity android:name=".User.User_View_Reminders" />
+
+        <!-- ALARM RECEIVER -->
+
+        <receiver
+            android:name=".AlarmReceiver"
+            android:enabled="true"
+            android:exported="false">
+            <intent-filter>
+                <!--  allows the receiver to run when the device up -->
+                <action android:name="android.intent.action.BOOT_COMPLETED"/>
+            </intent-filter>
+        </receiver>
 
     </application>
 </manifest>

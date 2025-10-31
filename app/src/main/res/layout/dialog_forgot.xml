@@ -2,13 +2,13 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="vertical"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
+    android:layout_height="wrap_content"
+    android:padding="16dp"
     android:layout_margin="16dp">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_margin="8dp"
         android:orientation="vertical">
 
         <TextView
@@ -28,42 +28,49 @@
             android:layout_height="wrap_content"
             android:text="Enter your email"
             android:textSize="18sp"
-            android:paddingStart="12dp"/>
+            android:paddingStart="12dp"
+            android:labelFor="@+id/inputEmail"/>
 
         <EditText
             android:id="@+id/inputEmail"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="Enter you email"
+            android:hint="Enter your email"
             android:textColorHint="#9E9E9E"
-            android:inputType="textPassword"
             android:padding="12dp"
             android:textColor="#000000"
             android:background="@android:drawable/edit_text"
-            android:layout_marginTop="8dp"/>
+            android:layout_marginTop="8dp"
+            android:autofillHints="emailAddress"
+
+        <!--
+        *** THIS IS THE CRITICAL CORRECTION ***
+        The inputType is now correctly set for an email address.
+        -->
+        android:inputType="textEmailAddress" />
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal">
+            android:orientation="horizontal"
+            android:layout_marginTop="16dp">
 
             <Button
                 android:id="@+id/btnCancel2"
-                android:layout_width="wrap_content"
+                style="?attr/materialButtonOutlinedStyle"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:text="Cancel"
-                android:layout_margin="15dp"
-                android:backgroundTint="#4CAF50"/>
+                android:layout_marginEnd="8dp"/>
 
             <Button
                 android:id="@+id/btnReset2"
-                android:layout_width="wrap_content"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:text="Reset"
-                android:layout_margin="15dp"
-                android:backgroundTint="#4CAF50"/>
+                android:layout_marginStart="8dp"/>
         </LinearLayout>
 
     </LinearLayout>
