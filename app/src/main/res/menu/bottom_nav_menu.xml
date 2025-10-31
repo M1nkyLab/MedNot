@@ -3,14 +3,17 @@
 
     <item
         android:id="@+id/nav_home"
-        android:title="Home" />
+        android:icon="@drawable/ic_home"
+        android:title="" />
 
     <item
         android:id="@+id/nav_add_medicine"
-        android:title="Add Medicine" />
+        android:icon="@drawable/ic_add"
+        android:title="" />
 
     <item
         android:id="@+id/nav_profile"
-        android:title="Profile" />
+        android:icon="@drawable/ic_profile"
+        android:title="" />
 
 </menu>
