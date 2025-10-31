@@ -2,7 +2,11 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
 
+    <!-- Permissions must be declared here, directly under the manifest tag -->
     <uses-permission android:name="android.permission.INTERNET"/>
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS"/>
+    <uses-permission android:name="android.permission.SCHEDULE_EXACT_ALARM" />
+    <uses-permission android:name="android.permission.USE_EXACT_ALARM" />
 
     <application
         android:allowBackup="true"
@@ -14,24 +18,16 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.Mednot">
 
-        <!-- Check Medicine Stock Page -->
-        <activity android:name=".User.Check_Med_Stock" />
+        <receiver
+            android:name=".AlarmReceiver"
+            android:enabled="true"
+            android:exported="false" />
 
-        <!-- Home Page -->
+
+        <activity android:name=".User.Check_Med_Stock" />
         <activity android:name=".User.Home" />
-
-        <!-- Register Page -->
-        <activity android:name=".Auth.Auth_Register" />
-
-        <!-- Check med stock page -->
-        <activity android:name=".User.Check_Med_Stock" />
-
-        <!-- Login Page -->
         <activity android:name=".User.User_View_Reminders" />
-
-
-
-        <!-- Login Page (Main Entry Point) -->
+        <activity android:name=".Auth.Auth_Register" />
         <activity
             android:name=".Auth.Auth_Login"
             android:exported="true">

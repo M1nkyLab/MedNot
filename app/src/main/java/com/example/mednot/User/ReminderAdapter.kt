@@ -1,122 +1,71 @@
 package com.example.mednot.User
 
-import android.app.AlertDialog
-import android.app.TimePickerDialog
-import android.content.Context
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.*
+import android.widget.Button
+import android.widget.TextView
+import android.widget.Toast
+import androidx.recyclerview.widget.RecyclerView
 import com.example.mednot.R
 import com.google.firebase.firestore.FirebaseFirestore
-import java.util.*
+
+// A data class to represent the structure of your medicine document in Firestore.
+// This provides type safety and makes your code much cleaner.
+data class Medicine(
+    val id: String = "", // Will hold the document ID from Firestore
+    val medicineName: String = "",
+    val dosage: String = "",
+    val dosageUnit: String = "",
+    val startTime: String = "",
+    var status: String = "upcoming" // 'var' because we might change it locally
+)
 
 class ReminderAdapter(
-    private val context: Context,
-    private val reminderList: MutableList<MutableMap<String, Any>>,
-    private val userId: String
-) : BaseAdapter() {
+    private val medicineList: MutableList<Medicine>
+) : RecyclerView.Adapter<ReminderAdapter.MedicineViewHolder>() {
 
-    private val firestore = FirebaseFirestore.getInstance()
-
-    override fun getCount(): Int = reminderList.size
-
-    override fun getItem(position: Int): Any = reminderList[position]
-
-    override fun getItemId(position: Int): Long = position.toLong()
-
-    override fun getView(position: Int, convertView: View?, parent: ViewGroup?): View {
-        val view = convertView ?: LayoutInflater.from(context)
-            .inflate(R.layout.item_reminder, parent, false)
-
-        val reminder = reminderList[position]
-        val docId = reminder["id"].toString()
-
-        val tvMedicineName = view.findViewById<TextView>(R.id.tvMedicineName)
-        val tvDosageTime = view.findViewById<TextView>(R.id.tvDosageTime)
-        val tvStatus = view.findViewById<TextView>(R.id.tvStatus)
-        val btnEdit = view.findViewById<Button>(R.id.btnEdit)
-        val btnTake = view.findViewById<Button>(R.id.btnTake)
-
-        val medName = reminder["medicineName"] ?: "Unknown Medicine"
-        val time = reminder["time"] ?: "No time set"
-        val dosage = reminder["dosage"] ?: "N/A"
-        val status = reminder["status"] ?: "upcoming"
-
-        tvMedicineName.text = "💊 $medName"
-        tvDosageTime.text = "$time | $dosage"
-        tvStatus.text = "Status: ${status.toString().replaceFirstChar { it.uppercase() }}"
-
-        // Color based on status
-        when (status.toString().lowercase()) {
-            "complete" -> tvStatus.setTextColor(android.graphics.Color.parseColor("#2E7D32")) // green
-            "upcoming" -> tvStatus.setTextColor(android.graphics.Color.parseColor("#F9A825")) // yellow
-            else -> tvStatus.setTextColor(android.graphics.Color.parseColor("#C62828")) // red
-        }
-
-        // Edit button
-        btnEdit.setOnClickListener {
-            showEditDialog(reminder, docId, position)
-        }
-
-        // Take Medicine button
-        btnTake.setOnClickListener {
-            firestore.collection("users").document(userId)
-                .collection("reminders").document(docId)
-                .update("status", "complete")
-                .addOnSuccessListener {
-                    Toast.makeText(context, "Marked as Complete ✅", Toast.LENGTH_SHORT).show()
-                    reminder["status"] = "complete"
-                    notifyDataSetChanged()
-                }
-        }
-
-        return view
+    // The ViewHolder holds references to the views for each item.
+    // This avoids repeatedly calling findViewById(), which is a major performance gain.
+    class MedicineViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+        val tvMedicineName: TextView = itemView.findViewById(R.id.tvMedicineName)
+        val tvDosageTime: TextView = itemView.findViewById(R.id.tvDosageTime)
+        val tvStatus: TextView = itemView.findViewById(R.id.tvStatus)
+        val btnEdit: Button = itemView.findViewById(R.id.btnEdit)
+        val btnTake: Button = itemView.findViewById(R.id.btnTake)
     }
 
-    private fun showEditDialog(reminder: MutableMap<String, Any>, docId: String, position: Int) {
-        val dialogView = LayoutInflater.from(context).inflate(R.layout.dialog_edit_reminder, null)
+    // Called when RecyclerView needs a new ViewHolder. It inflates your item layout.
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MedicineViewHolder {
+        val view = LayoutInflater.from(parent.context)
+            .inflate(R.layout.item_reminder, parent, false)
+        return MedicineViewHolder(view)
+    }
 
-        val etName = dialogView.findViewById<EditText>(R.id.etMedicineName)
-        val etDosage = dialogView.findViewById<EditText>(R.id.etDosage)
-        val btnPickTime = dialogView.findViewById<Button>(R.id.btnPickTime)
-        val tvPickedTime = dialogView.findViewById<TextView>(R.id.tvPickedTime)
+    // Returns the total number of items in the list.
+    override fun getItemCount(): Int = medicineList.size
 
-        etName.setText(reminder["medicineName"].toString())
-        etDosage.setText(reminder["dosage"].toString())
-        tvPickedTime.text = reminder["time"].toString()
+    // This is where the data is bound to the views of a specific item.
+    override fun onBindViewHolder(holder: MedicineViewHolder, position: Int) {
+        val currentMedicine = medicineList[position]
 
-        btnPickTime.setOnClickListener {
-            val cal = Calendar.getInstance()
-            TimePickerDialog(context, { _, hour, minute ->
-                val formattedTime = String.format("%02d:%02d", hour, minute)
-                tvPickedTime.text = formattedTime
-            }, cal.get(Calendar.HOUR_OF_DAY), cal.get(Calendar.MINUTE), true).show()
+        // Populate the views with data from the Medicine object
+        holder.tvMedicineName.text = "💊 ${currentMedicine.medicineName}"
+        holder.tvDosageTime.text = "${currentMedicine.startTime} | ${currentMedicine.dosage} ${currentMedicine.dosageUnit}"
+        holder.tvStatus.text = "Status: ${currentMedicine.status.replaceFirstChar { it.uppercase() }}"
+
+        // --- Event Listeners for Buttons ---
+
+        holder.btnEdit.setOnClickListener {
+            // TODO: Implement the edit functionality.
+            // You can open a dialog or a new activity here, passing 'currentMedicine.id'
+            Toast.makeText(holder.itemView.context, "Edit for ${currentMedicine.medicineName}", Toast.LENGTH_SHORT).show()
         }
 
-        AlertDialog.Builder(context)
-            .setTitle("Edit Reminder")
-            .setView(dialogView)
-            .setPositiveButton("Save") { _, _ ->
-                val updatedData = mapOf(
-                    "medicineName" to etName.text.toString(),
-                    "dosage" to etDosage.text.toString(),
-                    "time" to tvPickedTime.text.toString()
-                )
-
-                firestore.collection("users").document(userId)
-                    .collection("reminders").document(docId)
-                    .update(updatedData)
-                    .addOnSuccessListener {
-                        reminder["medicineName"] = etName.text.toString()
-                        reminder["dosage"] = etDosage.text.toString()
-                        reminder["time"] = tvPickedTime.text.toString()
-
-                        notifyDataSetChanged()
-                        Toast.makeText(context, "Reminder Updated ✅", Toast.LENGTH_SHORT).show()
-                    }
-            }
-            .setNegativeButton("Cancel", null)
-            .show()
+        holder.btnTake.setOnClickListener {
+            // TODO: Implement the logic to mark the medicine as "taken".
+            // This might involve updating the status in Firestore and then refreshing the view.
+            Toast.makeText(holder.itemView.context, "Taking ${currentMedicine.medicineName}", Toast.LENGTH_SHORT).show()
+        }
     }
 }
