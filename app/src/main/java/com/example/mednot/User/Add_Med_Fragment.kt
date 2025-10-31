@@ -20,7 +20,6 @@ import android.widget.Spinner
 import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.parentFragmentManager
 import com.example.mednot.AlarmReceiver
 import com.example.mednot.R
 import com.google.firebase.auth.FirebaseAuth
@@ -228,7 +227,8 @@ class Add_Med_Fragment : Fragment() {
             .add(medData)
             .addOnSuccessListener {
                 Toast.makeText(requireContext(), "Medicine saved and reminders set!", Toast.LENGTH_SHORT).show()
-                parentFragmentManager.popBackStack()
+                // *** CORRECTION 2: REPLACED WITH THE STANDARD METHOD CALL ***
+                getParentFragmentManager().popBackStack()
             }
             .addOnFailureListener { e ->
                 Toast.makeText(requireContext(), "Error saving data: ${e.message}", Toast.LENGTH_LONG).show()
