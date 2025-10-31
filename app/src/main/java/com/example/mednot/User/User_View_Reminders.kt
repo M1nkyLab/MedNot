@@ -1,7 +1,6 @@
 package com.example.mednot.User
 
 import android.os.Bundle
-import android.widget.ArrayAdapter
 import android.widget.ListView
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
@@ -32,22 +31,15 @@ class User_View_Reminders : AppCompatActivity() {
                 .collection("reminders")
                 .get()
                 .addOnSuccessListener { result ->
-                    val reminderList = mutableListOf<String>()
+                    val reminderList = mutableListOf<MutableMap<String, Any>>()
 
                     for (document in result) {
-                        val name = document.getString("medicineName") ?: "Unknown Medicine"
-                        val time = document.getString("time") ?: "No time set"
-                        val dosage = document.getString("dosage") ?: "N/A"
-                        val status = document.getString("status") ?: "Upcoming"
-
-                        reminderList.add("$name\n💊 $dosage | ⏰ $time | 📋 $status")
+                        val data = document.data.toMutableMap()
+                        data["id"] = document.id
+                        reminderList.add(data)
                     }
 
-                    val adapter = ArrayAdapter(
-                        this,
-                        android.R.layout.simple_list_item_1,
-                        reminderList
-                    )
+                    val adapter = ReminderAdapter(this, reminderList, uid)
                     reminderListView.adapter = adapter
                 }
                 .addOnFailureListener {

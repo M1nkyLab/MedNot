@@ -1,0 +1,63 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:padding="12dp"
+    android:background="#66BB6A"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginBottom="10dp"
+    android:clipToOutline="true"
+    android:elevation="2dp"
+    android:backgroundTintMode="src_in"
+    android:backgroundTint="#4CAF50">
+
+    <TextView
+        android:id="@+id/tvMedicineName"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="💊 Paracetamol"
+        android:textSize="18sp"
+        android:textStyle="bold"
+        android:textColor="#FFFFFF"/>
+
+    <TextView
+        android:id="@+id/tvDosageTime"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="8:00 AM | 2 tablets"
+        android:textColor="#FFFFFF"
+        android:layout_marginTop="4dp"/>
+
+    <TextView
+        android:id="@+id/tvStatus"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Status: Upcoming"
+        android:textColor="#FFFFFF"
+        android:layout_marginTop="6dp"/>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_marginTop="8dp">
+
+        <Button
+            android:id="@+id/btnEdit"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="Edit"
+            android:backgroundTint="#1976D2"
+            android:textColor="#FFFFFF"/>
+
+        <Button
+            android:id="@+id/btnTake"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="Take Med"
+            android:backgroundTint="#2E7D32"
+            android:textColor="#FFFFFF"
+            android:layout_marginStart="6dp"/>
+    </LinearLayout>
+</LinearLayout>
