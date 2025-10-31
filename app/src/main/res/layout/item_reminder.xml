@@ -1,39 +1,39 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:orientation="vertical"
     android:padding="12dp"
-    android:background="#66BB6A"
+    android:background="#4CAF50"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_marginBottom="10dp"
-    android:clipToOutline="true"
-    android:elevation="2dp"
-    android:backgroundTintMode="src_in"
-    android:backgroundTint="#4CAF50">
+    android:elevation="2dp">
+    <!-- Note: I removed backgroundTint and backgroundTintMode as they are redundant when only background is set.
+         I also removed clipToOutline as it's often used with rounded corners, which aren't present here. -->
 
     <TextView
         android:id="@+id/tvMedicineName"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="💊 Paracetamol"
         android:textSize="18sp"
         android:textStyle="bold"
-        android:textColor="#FFFFFF"/>
+        android:textColor="#FFFFFF"
+        tools:text="💊 Medicine Name" /> <!-- tools:text is a placeholder for the Android Studio preview -->
 
     <TextView
         android:id="@+id/tvDosageTime"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="8:00 AM | 2 tablets"
         android:textColor="#FFFFFF"
-        android:layout_marginTop="4dp"/>
+        android:layout_marginTop="4dp"
+        tools:text="Time | Dosage" />
 
     <TextView
         android:id="@+id/tvStatus"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Status: Upcoming"
         android:textColor="#FFFFFF"
-        android:layout_marginTop="6dp"/>
+        android:layout_marginTop="6dp"
+        tools:text="Status: Upcoming" />
 
     <LinearLayout
         android:layout_width="match_parent"

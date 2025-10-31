@@ -1,4 +1,4 @@
-package com.example.mednot.User
+package com.example.mednot
 
 import android.app.TimePickerDialog
 import android.os.Bundle
@@ -6,19 +6,18 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.*
-import androidx.fragment.app.Fragment
-import com.example.mednot.R
+import androidx.fragment.app.Fragment // 1. Changed from AppCompatActivity to Fragment
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import java.util.Calendar
 
+// 2. Class now inherits from Fragment
 class Add_Med_Fragment : Fragment() {
 
-    // declare firebase firestore
     private lateinit var firebaseAuth: FirebaseAuth
     private lateinit var db: FirebaseFirestore
 
-    // declare all functional components
+    // Declare all view components
     private lateinit var inputMedicineName: EditText
     private lateinit var inputDosage: EditText
     private lateinit var spinnerDosageUnit: Spinner
@@ -34,18 +33,19 @@ class Add_Med_Fragment : Fragment() {
     private lateinit var inputStock: EditText
     private lateinit var btnSaveMedicine: Button
 
+    // 3. Use onCreateView to setup the fragment's view
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-
+        // Inflate the layout for this fragment
         val view = inflater.inflate(R.layout.user_add_medicine_fragment, container, false)
 
-        // initialize firebase
+        // Initialize Firebase
         firebaseAuth = FirebaseAuth.getInstance()
         db = FirebaseFirestore.getInstance()
 
-        // link all variables with their IDs
+        // 4. Link all variables using view.findViewById
         inputMedicineName = view.findViewById(R.id.inputMedicineName)
         inputDosage = view.findViewById(R.id.inputDosage)
         spinnerDosageUnit = view.findViewById(R.id.spinnerDosageUnit)
@@ -68,26 +68,24 @@ class Add_Med_Fragment : Fragment() {
     }
 
     private fun setupSpinners() {
-        // dropdown for dosage units
-        ArrayAdapter.createFromResource(requireContext(),
-            R.array.dosage_units,
-            android.R.layout.simple_spinner_item).also {
+        // 5. Use requireContext() instead of 'this' in a Fragment
+        ArrayAdapter.createFromResource(
+            requireContext(), R.array.dosage_units, android.R.layout.simple_spinner_item
+        ).also {
             it.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
             spinnerDosageUnit.adapter = it
         }
 
-        // dropdown for medication types
-        ArrayAdapter.createFromResource(requireContext(),
-            R.array.medication_types,
-            android.R.layout.simple_spinner_item).also {
+        ArrayAdapter.createFromResource(
+            requireContext(), R.array.medication_types, android.R.layout.simple_spinner_item
+        ).also {
             it.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
             spinnerMedicationType.adapter = it
         }
 
-        // dropdown for eat time
-        ArrayAdapter.createFromResource(requireContext(),
-            R.array.eat_time_options,
-            android.R.layout.simple_spinner_item).also {
+        ArrayAdapter.createFromResource(
+            requireContext(), R.array.eat_time_options, android.R.layout.simple_spinner_item
+        ).also {
             it.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
             spinnerEatTime.adapter = it
         }
@@ -121,14 +119,13 @@ class Add_Med_Fragment : Fragment() {
     }
 
     private fun saveMedicine() {
-        val uid = firebaseAuth.currentUser?.uid
+        val uid = firebaseAuth.currentUser?.uid ?: return
         val medicineName = inputMedicineName.text.toString().trim()
         val dosage = inputDosage.text.toString().trim()
         val dosageUnit = spinnerDosageUnit.selectedItem?.toString() ?: ""
         val medicationType = spinnerMedicationType.selectedItem?.toString() ?: ""
         val instruction = spinnerEatTime.selectedItem?.toString() ?: ""
-        val selectedMethodId = radioGroupScheduleMethod.checkedRadioButtonId
-        val scheduleMethod = if (selectedMethodId == R.id.radioFrequency) "Frequency" else "Interval"
+        val scheduleMethod = if (radioGroupScheduleMethod.checkedRadioButtonId == R.id.radioFrequency) "Frequency" else "Interval"
         val timesPerDay = inputTimesPerDay.text.toString().trim()
         val intervalHours = inputIntervalHours.text.toString().trim()
         val startTime = inputTime.text.toString().trim()
