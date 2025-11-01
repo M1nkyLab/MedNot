@@ -21,8 +21,11 @@
         android:id="@+id/btnPickTime"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:backgroundTint="#4CAF50"
         android:text="Pick Time"
         android:layout_marginTop="10dp"/>
+
+
 
     <TextView
         android:id="@+id/tvPickedTime"

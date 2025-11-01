@@ -7,9 +7,8 @@ import android.widget.EditText
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
-import com.example.mednot.User.Home
 import com.example.mednot.R
-import com.example.mednot.Auth.Auth_Register
+import com.example.mednot.User.Home
 import com.google.firebase.auth.FirebaseAuth
 
 class Auth_Login : AppCompatActivity() {
@@ -18,7 +17,6 @@ class Auth_Login : AppCompatActivity() {
     private lateinit var inputPassword: EditText
     private lateinit var btnLogin: Button
     private lateinit var tvRegister: TextView
-
     private lateinit var firebaseAuth: FirebaseAuth
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -32,7 +30,7 @@ class Auth_Login : AppCompatActivity() {
         btnLogin = findViewById(R.id.btnLogin)
         tvRegister = findViewById(R.id.tvRegister)
 
-        // kalau user tekan btn login kemana dia pegi
+        // ✅ Login button action
         btnLogin.setOnClickListener {
             val email = inputEmail.text.toString().trim()
             val password = inputPassword.text.toString().trim()
@@ -45,7 +43,7 @@ class Auth_Login : AppCompatActivity() {
                         if (task.isSuccessful) {
                             Toast.makeText(this, "Login successful!", Toast.LENGTH_SHORT).show()
 
-                            // dia akan go to home page
+                            // ✅ Go to home page
                             val intent = Intent(this, Home::class.java)
                             startActivity(intent)
                             finish()
@@ -58,11 +56,12 @@ class Auth_Login : AppCompatActivity() {
                         }
                     }
             }
-            // go to reg page when clicked
-            tvRegister.setOnClickListener {
-                val intent = Intent(this, Auth_Register::class.java)
-                startActivity(intent)
-            }
+        }
+
+        // ✅ Go to register page when "Register" is clicked
+        tvRegister.setOnClickListener {
+            val intent = Intent(this, Auth_Register::class.java)
+            startActivity(intent)
         }
     }
 }

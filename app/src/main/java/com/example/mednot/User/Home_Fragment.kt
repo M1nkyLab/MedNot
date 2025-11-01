@@ -6,19 +6,38 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
+import android.widget.Toast
 import androidx.fragment.app.Fragment
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.example.mednot.R
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.Query
 import kotlin.math.roundToInt
 
 class Home_Fragment : Fragment() {
 
+    // Firebase instances
+    private val auth = FirebaseAuth.getInstance()
+    private val firestore = FirebaseFirestore.getInstance()
+
+    // Top section views
     private lateinit var welcomeMessage: TextView
     private lateinit var lowStockCountTextView: TextView
     private lateinit var todayMedCountTextView: TextView
-    private val auth = FirebaseAuth.getInstance()
-    private val firestore = FirebaseFirestore.getInstance()
+
+    // Views for upcoming reminders
+    private lateinit var todayRecyclerView: RecyclerView
+    private lateinit var todayAdapter: ReminderAdapter
+    private val todayList = mutableListOf<Medicine>()
+    private lateinit var tvNoReminders: TextView
+
+    // Views for medication history
+    private lateinit var historyRecyclerView: RecyclerView
+    private lateinit var historyAdapter: ReminderAdapter
+    private val historyList = mutableListOf<Medicine>()
+    private lateinit var tvNoHistory: TextView
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -26,100 +45,213 @@ class Home_Fragment : Fragment() {
     ): View? {
         val view = inflater.inflate(R.layout.user_home_fragment, container, false)
 
-        // Initialize views
+        // Initialize top section views
         welcomeMessage = view.findViewById(R.id.welcomeMessage)
         lowStockCountTextView = view.findViewById(R.id.lowStockCount)
         todayMedCountTextView = view.findViewById(R.id.todayMedCount)
 
-        // Load the child fragment that displays the reminder lists
-        if (savedInstanceState == null) { // Prevents re-adding fragment on config change
-            childFragmentManager.beginTransaction()
-                .replace(R.id.todayRemindersContainer, TodayRemindersFragment())
-                .commit()
-        }
+        // Initialize reminder lists views
+        setupReminderViews(view)
 
         return view
     }
 
     override fun onResume() {
         super.onResume()
-        // Fetch data every time the fragment becomes visible
-        loadUserDataAndStats()
+        // Load all data when fragment becomes visible
+        loadUserName()
+        loadAllData()
     }
 
-    private fun loadUserDataAndStats() {
+    private fun setupReminderViews(view: View) {
+        // Setup for Today's Reminders
+        tvNoReminders = view.findViewById(R.id.tvNoReminders)
+        todayRecyclerView = view.findViewById(R.id.todayRemindersRecyclerView)
+        todayRecyclerView.layoutManager = LinearLayoutManager(requireContext())
+        todayAdapter = ReminderAdapter(todayList)
+        todayRecyclerView.adapter = todayAdapter
+
+        // Setup for Medication History
+        tvNoHistory = view.findViewById(R.id.tvNoHistory)
+        historyRecyclerView = view.findViewById(R.id.medicationLogRecyclerView)
+        historyRecyclerView.layoutManager = LinearLayoutManager(requireContext())
+        historyAdapter = ReminderAdapter(historyList)
+        historyRecyclerView.adapter = historyAdapter
+    }
+
+    private fun loadUserName() {
         val currentUser = auth.currentUser
         if (currentUser == null) {
             welcomeMessage.text = "Welcome, Guest"
-            lowStockCountTextView.text = "Login to see your medicine stock."
-            todayMedCountTextView.text = "Login to see today's schedule."
             return
         }
 
         val uid = currentUser.uid
 
-        // Set a default welcome message while data loads
-        welcomeMessage.text = "Welcome!"
+        // Fetch user name from Firestore
+        firestore.collection("users")
+            .document(uid)
+            .get()
+            .addOnSuccessListener { document ->
+                if (document != null && document.exists()) {
+                    val userName = document.getString("name") ?: "User"
+                    // Extract first name (everything before the first space)
+                    val firstName = userName.split(" ").firstOrNull() ?: userName
+                    welcomeMessage.text = "Welcome, $firstName!"
+                } else {
+                    welcomeMessage.text = "Welcome!"
+                }
+            }
+            .addOnFailureListener { exception ->
+                Log.e("HomeFragment", "Error loading user name: ${exception.message}")
+                welcomeMessage.text = "Welcome!"
+            }
+    }
 
-        // Single Firestore call to fetch all medicine data for the user
+    private fun loadAllData() {
+        val currentUser = auth.currentUser
+        if (currentUser == null) {
+            lowStockCountTextView.text = "Login to see your medicine stock."
+            todayMedCountTextView.text = "Login to see today's schedule."
+
+            // Clear lists and update UI
+            todayList.clear()
+            historyList.clear()
+            updateReminderLists()
+            return
+        }
+
+        val uid = currentUser.uid
+
+        Log.d("HomeFragment", "Loading data for user: $uid")
+
+        // Single Firestore query to fetch all medicines for the user
         firestore.collection("medicines")
             .whereEqualTo("userId", uid)
             .get()
-            .addOnSuccessListener { result ->
-                if (result.isEmpty) {
+            .addOnSuccessListener { documents ->
+                Log.d("HomeFragment", "Documents fetched: ${documents.size()}")
+
+                if (documents.isEmpty) {
                     // Handle case where user has no medicines
                     todayMedCountTextView.text = "No medicines scheduled! 🎉"
                     lowStockCountTextView.text = "No medicines to track."
+
+                    // Clear lists and update UI
+                    todayList.clear()
+                    historyList.clear()
+                    updateReminderLists()
                     return@addOnSuccessListener
                 }
+
+                // Clear previous data
+                todayList.clear()
+                historyList.clear()
 
                 val lowStockList = mutableListOf<String>()
                 var upcomingCount = 0
 
-                for (doc in result) {
-                    // --- 1. Calculate Today's Upcoming Medicine Count ---
-                    val status = doc.getString("status") ?: "upcoming"
-                    if (!status.equals("complete", ignoreCase = true)) {
-                        upcomingCount++
-                    }
+                for (document in documents) {
+                    Log.d("HomeFragment", "Processing document: ${document.id}")
 
-                    // --- 2. Calculate Low Stock ---
-                    val name = doc.getString("medicineName") ?: "Unnamed Medicine"
-                    val stock = doc.getString("stock")?.toDoubleOrNull() ?: 0.0
-                    if (stock <= 0) continue // Skip meds with no stock tracking
+                    // Get status field (default to "upcoming" if not present)
+                    val status = document.getString("status") ?: "upcoming"
 
-                    val scheduleMethod = doc.getString("scheduleMethod")
-                    val timesPerDay = doc.getString("timesPerDay")
-                    val intervalHours = doc.getString("intervalHours")
-                    val dosesPerDay = calculateDosesPerDay(scheduleMethod, timesPerDay, intervalHours)
+                    try {
+                        // Convert to Medicine object using toObject
+                        val medicine = document.toObject(Medicine::class.java).copy(id = document.id)
 
-                    if (dosesPerDay > 0) {
-                        val daysOfSupply = stock / dosesPerDay
-                        // Simplified low stock rule: less than 7 days of supply
-                        if (daysOfSupply < 7) {
-                            val daysLeft = daysOfSupply.roundToInt().coerceAtLeast(0)
-                            lowStockList.add("$name ($daysLeft days left)")
+                        // Sort into reminder lists based on status
+                        if (status.equals("complete", ignoreCase = true)) {
+                            historyList.add(medicine)
+                        } else {
+                            todayList.add(medicine)
+                            upcomingCount++
                         }
+
+                        // Calculate low stock
+                        val name = document.getString("medicineName") ?: "Unnamed Medicine"
+                        val stockStr = document.getString("stock") ?: "0"
+                        val stock = stockStr.toDoubleOrNull() ?: 0.0
+                        val dosageUnit = document.getString("dosageUnit") ?: ""
+
+                        if (stock > 0) {
+                            val scheduleMethod = document.getString("scheduleMethod")
+                            val timesPerDay = document.getString("timesPerDay")
+                            val intervalHours = document.getString("intervalHours")
+                            val dosage = document.getString("dosage")?.toDoubleOrNull() ?: 1.0
+
+                            val dosesPerDay = calculateDosesPerDay(
+                                scheduleMethod,
+                                timesPerDay,
+                                intervalHours
+                            )
+
+                            if (dosesPerDay > 0) {
+                                // Calculate how much medication is used per day
+                                val usagePerDay = dosesPerDay * dosage
+
+                                // Calculate days of supply
+                                val daysOfSupply = stock / usagePerDay
+
+                                // Low stock threshold: less than 7 days OR less than 10 units
+                                val isLowStock = daysOfSupply < 7 || stock < 10
+
+                                if (isLowStock) {
+                                    val daysLeft = daysOfSupply.roundToInt().coerceAtLeast(0)
+                                    val unitDisplay = when {
+                                        dosageUnit.contains("ml", ignoreCase = true) -> "ml"
+                                        dosageUnit.contains("tablet", ignoreCase = true) ||
+                                                dosageUnit.contains("pill", ignoreCase = true) -> "tablets"
+                                        dosageUnit.contains("capsule", ignoreCase = true) -> "capsules"
+                                        else -> "units"
+                                    }
+
+                                    lowStockList.add("$name (${stock.toInt()} $unitDisplay, ~$daysLeft days)")
+                                }
+                            }
+                        }
+                    } catch (e: Exception) {
+                        Log.e("HomeFragment", "Error parsing medicine: ${e.message}")
                     }
                 }
 
-                // Update UI with calculated stats
+                // Sort lists by time (if Medicine has startTime field)
+                todayList.sortBy { it.startTime }
+                historyList.reverse() // Most recent first
+
+                // Update all UI elements
                 todayMedCountTextView.text = "You have $upcomingCount medicine(s) scheduled for today."
                 updateLowStockUI(lowStockList)
+                updateReminderLists()
+
+                Log.d("HomeFragment", "Today list: ${todayList.size}, History list: ${historyList.size}")
             }
-            .addOnFailureListener { e ->
-                Log.e("HomeFragment", "Error loading stats: ${e.message}")
+            .addOnFailureListener { exception ->
+                Log.e("HomeFragment", "Error loading data: ${exception.message}", exception)
+                Toast.makeText(requireContext(), "Error: ${exception.message}", Toast.LENGTH_LONG).show()
                 todayMedCountTextView.text = "Error loading schedule."
                 lowStockCountTextView.text = "Error loading stock data."
             }
     }
 
+    private fun updateReminderLists() {
+        // Update today's reminders UI
+        todayAdapter.notifyDataSetChanged()
+        tvNoReminders.visibility = if (todayList.isEmpty()) View.VISIBLE else View.GONE
+        todayRecyclerView.visibility = if (todayList.isEmpty()) View.GONE else View.VISIBLE
+
+        // Update history UI
+        historyAdapter.notifyDataSetChanged()
+        tvNoHistory.visibility = if (historyList.isEmpty()) View.VISIBLE else View.GONE
+        historyRecyclerView.visibility = if (historyList.isEmpty()) View.GONE else View.VISIBLE
+    }
+
     private fun updateLowStockUI(lowStockList: List<String>) {
         if (lowStockList.isNotEmpty()) {
-            val medNames = lowStockList.joinToString(separator = ", ")
-            lowStockCountTextView.text = "${lowStockList.size} medicine(s) are low: $medNames"
+            lowStockCountTextView.text = "${lowStockList.size} medicine(s) low:\n${lowStockList.joinToString(separator = "\n• ", prefix = "• ")}"
         } else {
-            lowStockCountTextView.text = "All medicines are well-stocked."
+            lowStockCountTextView.text = "All medicines are well-stocked. ✓"
         }
     }
 
@@ -129,7 +261,7 @@ class Home_Fragment : Fragment() {
         intervalHours: String?
     ): Double {
         return when (scheduleMethod) {
-            "Frequency" -> timesPerDay?.toDoubleOrNull() ?: 0.0 // Corrected "frequency" to "Frequency"
+            "Frequency" -> timesPerDay?.toDoubleOrNull() ?: 0.0
             "Interval" -> {
                 val interval = intervalHours?.toDoubleOrNull() ?: 0.0
                 if (interval > 0) 24.0 / interval else 0.0

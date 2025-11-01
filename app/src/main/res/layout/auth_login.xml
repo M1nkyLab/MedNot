@@ -59,9 +59,12 @@
         android:id="@+id/tvRegister"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Don’t have account? Register"
+        android:text="Don’t have an account? Register"
         android:textSize="15sp"
-        android:textColor="#88000000"
+        android:textColor="#2E7D32"
+        android:textStyle="bold"
         android:layout_marginTop="16dp"
-        android:layout_gravity="center" />
+        android:layout_gravity="center"
+        android:clickable="true"
+        android:focusable="true" />
 </LinearLayout>
