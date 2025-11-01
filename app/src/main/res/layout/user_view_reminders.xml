@@ -24,6 +24,6 @@
         android:id="@+id/remindersRecyclerView"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        tools:listitem="@layout/item_reminder" />
+        tools:listitem="@layout/item_reminder_today_medicines_schedule" />
 
 </LinearLayout>

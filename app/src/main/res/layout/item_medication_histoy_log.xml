@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:padding="16dp"
+    android:layout_marginBottom="12dp"
+    android:background="@drawable/rounded_card"
+    android:elevation="3dp">
+
+    <!-- Medicine Name -->
+    <TextView
+        android:id="@+id/tvMedicineName"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="💊 Paracetamol"
+        android:textStyle="bold"
+        android:textSize="18sp"
+        android:textColor="#FFFFFF"
+        android:layout_marginBottom="6dp"
+        tools:text="💊 Medicine Name" />
+
+    <!-- Dosage and Time -->
+    <TextView
+        android:id="@+id/tvDosageTime"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Time: 8:00 AM | Dosage: 500 mg"
+        android:textSize="15sp"
+        android:textColor="#E8F5E9"
+        android:layout_marginBottom="4dp"
+        tools:text="Time: 8:00 AM | Dosage: 500 mg" />
+
+    <!-- Status -->
+    <TextView
+        android:id="@+id/tvStatus"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Status: Taken"
+        android:textSize="15sp"
+        android:textStyle="italic"
+        android:textColor="#C8E6C9"
+        tools:text="Status: Missed" />
+
+</LinearLayout>

@@ -42,15 +42,6 @@
         android:layout_marginTop="8dp">
 
         <Button
-            android:id="@+id/btnEdit"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="Edit"
-            android:backgroundTint="#1976D2"
-            android:textColor="#FFFFFF"/>
-
-        <Button
             android:id="@+id/btnTake"
             android:layout_width="0dp"
             android:layout_height="wrap_content"

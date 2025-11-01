@@ -31,14 +31,14 @@ class ReminderAdapter(
         val tvMedicineName: TextView = itemView.findViewById(R.id.tvMedicineName)
         val tvDosageTime: TextView = itemView.findViewById(R.id.tvDosageTime)
         val tvStatus: TextView = itemView.findViewById(R.id.tvStatus)
-        val btnEdit: Button = itemView.findViewById(R.id.btnEdit)
+        //val btnEdit: Button = itemView.findViewById(R.id.btnEdit)
         val btnTake: Button = itemView.findViewById(R.id.btnTake)
     }
 
     // Called when RecyclerView needs a new ViewHolder. It inflates your item layout.
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MedicineViewHolder {
         val view = LayoutInflater.from(parent.context)
-            .inflate(R.layout.item_reminder, parent, false)
+            .inflate(R.layout.item_reminder_today_medicines_schedule, parent, false)
         return MedicineViewHolder(view)
     }
 
@@ -56,11 +56,11 @@ class ReminderAdapter(
 
         // --- Event Listeners for Buttons ---
 
-        holder.btnEdit.setOnClickListener {
+        //holder.btnEdit.setOnClickListener {
             // TODO: Implement the edit functionality.
             // You can open a dialog or a new activity here, passing 'currentMedicine.id'
-            Toast.makeText(holder.itemView.context, "Edit for ${currentMedicine.medicineName}", Toast.LENGTH_SHORT).show()
-        }
+            //Toast.makeText(holder.itemView.context, "Edit for ${currentMedicine.medicineName}", Toast.LENGTH_SHORT).show()
+        //}
 
         holder.btnTake.setOnClickListener {
             // TODO: Implement the logic to mark the medicine as "taken".

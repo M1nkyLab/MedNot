@@ -61,7 +61,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:nestedScrollingEnabled="false"
-                tools:listitem="@layout/item_reminder" />
+                tools:listitem="@layout/item_reminder_today_medicines_schedule" />
 
             <TextView
                 android:id="@+id/tvNoReminders"
@@ -118,7 +118,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:nestedScrollingEnabled="false"
-            tools:listitem="@layout/item_reminder" />
+            tools:listitem="@layout/item_medication_histoy_log" />
 
         <TextView
             android:id="@+id/tvNoHistory"
