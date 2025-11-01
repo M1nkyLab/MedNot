@@ -198,7 +198,7 @@ class Home_Fragment : Fragment() {
                                 // untuk ccheck kalau stock ubat tu kurang dari 7 hari
                                 if (daysRemaining < 7) {
                                     val daysLeft = daysRemaining.roundToInt().coerceAtLeast(0)
-
+                                    //
                                     val unitDisplay = when {
                                         dosageUnit.contains("tablet") -> "tablets"
                                         dosageUnit.contains("capsule") -> "capsules"
