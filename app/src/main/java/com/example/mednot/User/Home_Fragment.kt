@@ -169,45 +169,51 @@ class Home_Fragment : Fragment() {
                             upcomingCount++
                         }
 
-                        // Calculate low stock
+                        // low stock calculation
                         val name = document.getString("medicineName") ?: "Unnamed Medicine"
                         val stockStr = document.getString("stock") ?: "0"
                         val stock = stockStr.toDoubleOrNull() ?: 0.0
-                        val dosageUnit = document.getString("dosageUnit") ?: ""
+                        val dosageUnit = document.getString("dosageUnit")?.lowercase() ?: ""
+                        val scheduleMethod = document.getString("scheduleMethod")
+                        val timesPerDay = document.getString("timesPerDay")
+                        val intervalHours = document.getString("intervalHours")
+                        val dosage = document.getString("dosage")?.toDoubleOrNull() ?: 1.0
+                        val durationDays = document.getString("duration")?.toDoubleOrNull() ?: 0.0
 
                         if (stock > 0) {
-                            val scheduleMethod = document.getString("scheduleMethod")
-                            val timesPerDay = document.getString("timesPerDay")
-                            val intervalHours = document.getString("intervalHours")
-                            val dosage = document.getString("dosage")?.toDoubleOrNull() ?: 1.0
-
-                            val dosesPerDay = calculateDosesPerDay(
-                                scheduleMethod,
-                                timesPerDay,
-                                intervalHours
-                            )
+                            // nie untuk kita sehari bape kali makan ubat
+                            val dosesPerDay = when (scheduleMethod) {
+                                "Frequency" -> timesPerDay?.toDoubleOrNull() ?: 0.0
+                                "Interval" -> {
+                                    val interval = intervalHours?.toDoubleOrNull() ?: 0.0
+                                    if (interval > 0) 24.0 / interval else 0.0
+                                }
+                                else -> 0.0
+                            }
 
                             if (dosesPerDay > 0) {
-                                // Calculate how much medication is used per day
-                                val usagePerDay = dosesPerDay * dosage
+                                // nie untuk kira stock tinggal lagi untuk ape hari
+                                val daysRemaining = stock / dosesPerDay
 
-                                // Calculate days of supply
-                                val daysOfSupply = stock / usagePerDay
+                                // untuk ccheck kalau stock ubat tu kurang dari 7 hari
+                                if (daysRemaining < 7) {
+                                    val daysLeft = daysRemaining.roundToInt().coerceAtLeast(0)
 
-                                // Low stock threshold: less than 7 days OR less than 10 units
-                                val isLowStock = daysOfSupply < 7 || stock < 10
-
-                                if (isLowStock) {
-                                    val daysLeft = daysOfSupply.roundToInt().coerceAtLeast(0)
                                     val unitDisplay = when {
-                                        dosageUnit.contains("ml", ignoreCase = true) -> "ml"
-                                        dosageUnit.contains("tablet", ignoreCase = true) ||
-                                                dosageUnit.contains("pill", ignoreCase = true) -> "tablets"
-                                        dosageUnit.contains("capsule", ignoreCase = true) -> "capsules"
+                                        dosageUnit.contains("tablet") -> "tablets"
+                                        dosageUnit.contains("capsule") -> "capsules"
+                                        dosageUnit.contains("ml") -> "ml"
+                                        dosageUnit.contains("mg") -> "mg"
+                                        dosageUnit.contains("mcg") || dosageUnit.contains("µg") -> "mcg"
+                                        dosageUnit.contains("g") -> "g"
+                                        dosageUnit.contains("iu") -> "IU"
                                         else -> "units"
                                     }
 
-                                    lowStockList.add("$name (${stock.toInt()} $unitDisplay, ~$daysLeft days)")
+                                    // add to low stock list
+                                    lowStockList.add(
+                                        "$name (${stock.toInt()} $unitDisplay, ~${daysLeft} days left)"
+                                    )
                                 }
                             }
                         }
