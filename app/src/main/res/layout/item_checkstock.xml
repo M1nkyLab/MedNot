@@ -24,37 +24,19 @@
             android:textSize="18sp" />
 
         <TextView
-            android:id="@+id/tvQuantity"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Quantity:"
-            android:textSize="15sp"
-            android:textColor="#FFFFFF"
-            android:layout_marginTop="6dp" />
-
-        <TextView
             android:id="@+id/tvRemaining"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Remaining:"
             android:textSize="15sp"
-            android:textColor="#FFFFFF" />
-
-        <TextView
-            android:id="@+id/tvDosage"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Dosage:"
-            android:textSize="15sp"
-            android:textColor="#FFFFFF" />
-
-        <TextView
-            android:id="@+id/tvLastUpdated"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Last Updated:"
-            android:textSize="15sp"
-            android:textColor="#FFFFFF" />
+            android:textColor="#FFFFFF"
+            android:layout_marginTop="6dp" /> <TextView
+        android:id="@+id/tvDosage"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Dosage:"
+        android:textSize="15sp"
+        android:textColor="#FFFFFF" />
 
         <LinearLayout
             android:layout_width="match_parent"

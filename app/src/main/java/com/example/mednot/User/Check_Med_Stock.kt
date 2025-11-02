@@ -54,27 +54,26 @@ class Check_Med_Stock : AppCompatActivity() {
                 for (doc in result) {
                     val docId = doc.id
                     val medName = doc.getString("medicineName") ?: "Unknown"
-                    val quantity = doc.getString("quantity") ?: "0"
+                    // val quantity = doc.getString("quantity") ?: "0" // <- REMOVED
                     val remaining = doc.getString("stock") ?: "0"
                     val dosage = doc.getString("dosage") ?: ""
                     val dosageUnit = doc.getString("dosageUnit") ?: ""
-                    val lastUpdate = doc.getString("lastUpdated") ?: "N/A"
 
                     // Inflate the medicine card layout
                     val cardView = layoutInflater.inflate(R.layout.item_checkstock, containerLayout, false)
 
                     // Bind data to UI elements in the card
                     val tvMedName = cardView.findViewById<TextView>(R.id.tvMedName)
-                    val tvQuantity = cardView.findViewById<TextView>(R.id.tvQuantity)
+                    // val tvQuantity = cardView.findViewById<TextView>(R.id.tvQuantity) // <- REMOVED
                     val tvRemaining = cardView.findViewById<TextView>(R.id.tvRemaining)
                     val tvDosage = cardView.findViewById<TextView>(R.id.tvDosage)
-                    val tvLastUpdated = cardView.findViewById<TextView>(R.id.tvLastUpdated)
+                    // val tvLastUpdated = cardView.findViewById<TextView>(R.id.tvLastUpdated) // <- REMOVED
 
                     tvMedName.text = medName
-                    tvQuantity.text = "Quantity: $quantity"
+                    // tvQuantity.text = "Quantity: $quantity" // <- REMOVED
                     tvRemaining.text = "Remaining: $remaining"
                     tvDosage.text = "Dosage: $dosage $dosageUnit"
-                    tvLastUpdated.text = "Last Updated: $lastUpdate"
+                    // tvLastUpdated.text = "Last Updated: $lastUpdate" // <- REMOVED (and was bugged)
 
                     // --- Button Logic ---
                     val btnEdit = cardView.findViewById<Button>(R.id.btnEditStock)

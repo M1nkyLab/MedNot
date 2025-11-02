@@ -18,7 +18,6 @@ class Edit_Med_Stock : AppCompatActivity() {
     // --- Views ---
     private lateinit var tvEditTitle: TextView             // Title of the screen
     private lateinit var etEditMedName: TextInputEditText  // Editable medicine name
-    private lateinit var etEditQuantity: TextInputEditText // Editable total quantity
     private lateinit var etEditStock: TextInputEditText    // Editable remaining stock
     private lateinit var etEditDosage: TextInputEditText   // Editable dosage
     private lateinit var etEditDosageUnit: TextInputEditText // Editable dosage unit
@@ -42,7 +41,6 @@ class Edit_Med_Stock : AppCompatActivity() {
         // --- Initialize views ---
         tvEditTitle = findViewById(R.id.tvEditTitle)
         etEditMedName = findViewById(R.id.etEditMedName)
-        etEditQuantity = findViewById(R.id.etEditQuantity)
         etEditStock = findViewById(R.id.etEditStock)
         etEditDosage = findViewById(R.id.etEditDosage)
         etEditDosageUnit = findViewById(R.id.etEditDosageUnit)
@@ -73,7 +71,6 @@ class Edit_Med_Stock : AppCompatActivity() {
 
                         // Set text in editable fields
                         etEditMedName.setText(medName)
-                        etEditQuantity.setText(quantity)
                         etEditStock.setText(stock)
                         etEditDosage.setText(dosage)
                         etEditDosageUnit.setText(dosageUnit)
@@ -94,14 +91,12 @@ class Edit_Med_Stock : AppCompatActivity() {
     private fun saveMedicineData() {
         // Get text from all input fields
         val newMedName = etEditMedName.text.toString()
-        val newQuantity = etEditQuantity.text.toString()
         val newStock = etEditStock.text.toString()
         val newDosage = etEditDosage.text.toString()
         val newDosageUnit = etEditDosageUnit.text.toString()
-        val lastUpdate = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(Date()) // Current date
 
         // Validate that all fields are filled
-        if (newMedName.isBlank() || newQuantity.isBlank() || newStock.isBlank() || newDosage.isBlank() || newDosageUnit.isBlank()) {
+        if (newMedName.isBlank()  || newStock.isBlank() || newDosage.isBlank() || newDosageUnit.isBlank()) {
             Toast.makeText(this, "Please fill in all fields", Toast.LENGTH_SHORT).show()
             return
         }
@@ -109,11 +104,9 @@ class Edit_Med_Stock : AppCompatActivity() {
         // Prepare a map with updated values
         val updates = hashMapOf<String, Any>(
             "medicineName" to newMedName,
-            "quantity" to newQuantity,
             "stock" to newStock,
             "dosage" to newDosage,
             "dosageUnit" to newDosageUnit,
-            "lastUpdated" to lastUpdate
         )
 
         // Update Firestore document

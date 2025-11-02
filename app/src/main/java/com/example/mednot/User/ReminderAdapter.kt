@@ -76,7 +76,7 @@ class ReminderAdapter(
             // Change button text & color based on medicine status
             when (currentMedicine.status.lowercase()) {
                 "taken", "complete" -> {
-                    button?.text = "Taken ✓"
+                    button?.text = "Taken"
                     button?.isEnabled = false
                     button?.alpha = 0.5f
                     holder.tvStatus.setTextColor(0xFF4CAF50.toInt()) // Green
