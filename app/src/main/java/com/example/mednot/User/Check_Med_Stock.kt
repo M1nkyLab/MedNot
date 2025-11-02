@@ -6,38 +6,41 @@ import android.widget.Button
 import android.widget.LinearLayout
 import android.widget.TextView
 import android.widget.Toast
-// import androidx.appcompat.app.AlertDialog // CHANGED: No longer needed
 import androidx.appcompat.app.AppCompatActivity
 import com.example.mednot.R
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 
+// This activity shows a list of all medicines and allows the user to edit or delete them
 class Check_Med_Stock : AppCompatActivity() {
 
-    private lateinit var firebaseAuth: FirebaseAuth
-    private lateinit var db: FirebaseFirestore
-    private lateinit var containerLayout: LinearLayout
+    private lateinit var firebaseAuth: FirebaseAuth     // Firebase Authentication instance
+    private lateinit var db: FirebaseFirestore         // Firestore database instance
+    private lateinit var containerLayout: LinearLayout // The layout container that holds medicine cards
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.user_check_med_stock)
+        setContentView(R.layout.user_check_med_stock) // Set the UI layout for this activity
 
-        firebaseAuth = FirebaseAuth.getInstance()
-        db = FirebaseFirestore.getInstance()
+        firebaseAuth = FirebaseAuth.getInstance()      // Initialize FirebaseAuth
+        db = FirebaseFirestore.getInstance()           // Initialize Firestore
+        containerLayout = findViewById(R.id.containerStockList) // Get reference to LinearLayout
 
-        containerLayout = findViewById(R.id.containerStockList)
-
-        loadMedicines()
+        loadMedicines() // Load medicines from Firestore
     }
 
+    // Function to load all medicines for the current user
     fun loadMedicines() {
-        val uid = firebaseAuth.currentUser?.uid ?: return
+        val uid = firebaseAuth.currentUser?.uid ?: return // Get current user's ID
 
         db.collection("medicines")
-            .whereEqualTo("userId", uid)
+            .whereEqualTo("userId", uid) // Only get medicines that belong to this user
             .get()
             .addOnSuccessListener { result ->
-                containerLayout.removeAllViews()
+
+                containerLayout.removeAllViews() // Clear old medicine views
+
+                // If no medicines found, show a message
                 if (result.isEmpty) {
                     val emptyText = TextView(this)
                     emptyText.text = "No medicines found."
@@ -47,6 +50,7 @@ class Check_Med_Stock : AppCompatActivity() {
                     return@addOnSuccessListener
                 }
 
+                // Loop through all medicines and create a card for each
                 for (doc in result) {
                     val docId = doc.id
                     val medName = doc.getString("medicineName") ?: "Unknown"
@@ -56,16 +60,15 @@ class Check_Med_Stock : AppCompatActivity() {
                     val dosageUnit = doc.getString("dosageUnit") ?: ""
                     val lastUpdate = doc.getString("lastUpdated") ?: "N/A"
 
-                    // Inflate card layout
+                    // Inflate the medicine card layout
                     val cardView = layoutInflater.inflate(R.layout.item_checkstock, containerLayout, false)
 
-                    // Bind data
+                    // Bind data to UI elements in the card
                     val tvMedName = cardView.findViewById<TextView>(R.id.tvMedName)
                     val tvQuantity = cardView.findViewById<TextView>(R.id.tvQuantity)
                     val tvRemaining = cardView.findViewById<TextView>(R.id.tvRemaining)
                     val tvDosage = cardView.findViewById<TextView>(R.id.tvDosage)
                     val tvLastUpdated = cardView.findViewById<TextView>(R.id.tvLastUpdated)
-                    // val tvLowStock = cardView.findViewById<TextView>(R.id.tvLowStockWarning) // CHANGED: Removed
 
                     tvMedName.text = medName
                     tvQuantity.text = "Quantity: $quantity"
@@ -73,43 +76,39 @@ class Check_Med_Stock : AppCompatActivity() {
                     tvDosage.text = "Dosage: $dosage $dosageUnit"
                     tvLastUpdated.text = "Last Updated: $lastUpdate"
 
-                    // CHANGED: Removed low stock logic block
-
                     // --- Button Logic ---
                     val btnEdit = cardView.findViewById<Button>(R.id.btnEditStock)
                     val btnDelete = cardView.findViewById<Button>(R.id.btnDeleteStock)
 
-                    // Set Edit listener
+                    // Edit button opens Edit_Med_Stock activity with medicine ID
                     btnEdit.setOnClickListener {
-                        // TODO: Create an "EditStockActivity" to handle editing
                         val intent = Intent(this, Edit_Med_Stock::class.java)
-                            intent.putExtra("MEDICINE_ID", docId)
-                            startActivity(intent)
-
+                        intent.putExtra("MEDICINE_ID", docId)
+                        startActivity(intent)
                         Toast.makeText(this, "Edit: $medName (ID: $docId)", Toast.LENGTH_SHORT).show()
                     }
 
-                    // CHANGED: Set Delete listener to delete directly
+                    // Delete button deletes the medicine from Firestore
                     btnDelete.setOnClickListener {
                         deleteMedicine(docId)
                     }
 
+                    // Add the card to the container layout
                     containerLayout.addView(cardView)
                 }
             }
-            .addOnFailureListener {
+            .addOnFailureListener { e ->
+                // Show error message if loading fails
                 containerLayout.removeAllViews()
                 val errorText = TextView(this)
-                errorText.text = "Failed to load medicines: ${it.message}"
+                errorText.text = "Failed to load medicines: ${e.message}"
                 errorText.textSize = 16f
                 errorText.setPadding(16, 16, 16, 16)
                 containerLayout.addView(errorText)
             }
     }
 
-    // --- CHANGED: Removed the showDeleteConfirmationDialog function ---
-
-    // --- This function handles the actual deletion ---
+    // Function to delete a medicine document from Firestore
     private fun deleteMedicine(docId: String) {
         db.collection("medicines").document(docId)
             .delete()
@@ -122,7 +121,7 @@ class Check_Med_Stock : AppCompatActivity() {
             }
     }
 
-    // Refresh the list when the user comes back from the Edit activity
+    // Refresh the list when returning from Edit_Med_Stock activity
     override fun onResume() {
         super.onResume()
         loadMedicines()

@@ -12,72 +12,66 @@ import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
 
+// Activity to edit the stock information of a single medicine
 class Edit_Med_Stock : AppCompatActivity() {
 
-    private lateinit var tvEditTitle: TextView
-    // private lateinit var tvEditMedName: TextView // CHANGED: Removed this
-    private lateinit var etEditQuantity: TextInputEditText
-    private lateinit var etEditStock: TextInputEditText
-    private lateinit var btnSaveChanges: Button
+    // --- Views ---
+    private lateinit var tvEditTitle: TextView             // Title of the screen
+    private lateinit var etEditMedName: TextInputEditText  // Editable medicine name
+    private lateinit var etEditQuantity: TextInputEditText // Editable total quantity
+    private lateinit var etEditStock: TextInputEditText    // Editable remaining stock
+    private lateinit var etEditDosage: TextInputEditText   // Editable dosage
+    private lateinit var etEditDosageUnit: TextInputEditText // Editable dosage unit
+    private lateinit var btnSaveChanges: Button           // Button to save changes
 
-    // CHANGED: Added new fields
-    private lateinit var etEditMedName: TextInputEditText
-    private lateinit var etEditDosage: TextInputEditText
-    private lateinit var etEditDosageUnit: TextInputEditText
-
-    private val db = FirebaseFirestore.getInstance()
-    private var currentMedId: String? = null
+    private val db = FirebaseFirestore.getInstance()      // Firestore instance
+    private var currentMedId: String? = null             // ID of the medicine being edited
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.edit_med_stock)
+        setContentView(R.layout.edit_med_stock) // Set the layout for this screen
 
-        // Get the ID passed from Check_Med_Stock activity
+        // Get the medicine ID from the previous activity
         currentMedId = intent.getStringExtra("MEDICINE_ID")
-
         if (currentMedId == null) {
             Toast.makeText(this, "Error: Medicine ID not found", Toast.LENGTH_LONG).show()
-            finish() // Close activity if there's no ID
+            finish() // Close the activity if no ID was passed
             return
         }
 
-        // Initialize views
+        // --- Initialize views ---
         tvEditTitle = findViewById(R.id.tvEditTitle)
-        // tvEditMedName = findViewById(R.id.tvEditMedName) // CHANGED: Removed this
+        etEditMedName = findViewById(R.id.etEditMedName)
         etEditQuantity = findViewById(R.id.etEditQuantity)
         etEditStock = findViewById(R.id.etEditStock)
-        btnSaveChanges = findViewById(R.id.btnSaveChanges)
-
-        // CHANGED: Find new views
-        etEditMedName = findViewById(R.id.etEditMedName)
         etEditDosage = findViewById(R.id.etEditDosage)
         etEditDosageUnit = findViewById(R.id.etEditDosageUnit)
+        btnSaveChanges = findViewById(R.id.btnSaveChanges)
 
-
-        // Load the data for this medicine
+        // Load current medicine data from Firestore into the fields
         loadMedicineData()
 
-        // Set listener for the save button
+        // Set click listener to save changes when button is pressed
         btnSaveChanges.setOnClickListener {
             saveMedicineData()
         }
     }
 
+    // Load the current medicine data from Firestore
     private fun loadMedicineData() {
         currentMedId?.let { medId ->
             db.collection("medicines").document(medId)
                 .get()
                 .addOnSuccessListener { document ->
                     if (document != null && document.exists()) {
-                        // CHANGED: Load all the data
+                        // Load all fields from the document
                         val medName = document.getString("medicineName") ?: "N/A"
                         val quantity = document.getString("quantity") ?: "0"
                         val stock = document.getString("stock") ?: "0"
                         val dosage = document.getString("dosage") ?: "0"
                         val dosageUnit = document.getString("dosageUnit") ?: ""
 
-                        // CHANGED: Set text for all editable fields
-                        // tvEditMedName.text = medName // Removed
+                        // Set text in editable fields
                         etEditMedName.setText(medName)
                         etEditQuantity.setText(quantity)
                         etEditStock.setText(stock)
@@ -86,32 +80,33 @@ class Edit_Med_Stock : AppCompatActivity() {
 
                     } else {
                         Toast.makeText(this, "Error: Medicine not found", Toast.LENGTH_LONG).show()
-                        finish()
+                        finish() // Close if medicine does not exist
                     }
                 }
                 .addOnFailureListener { e ->
                     Toast.makeText(this, "Error loading data: ${e.message}", Toast.LENGTH_LONG).show()
-                    finish()
+                    finish() // Close on failure
                 }
         }
     }
 
+    // Save the updated medicine data back to Firestore
     private fun saveMedicineData() {
-        // CHANGED: Get text from all fields
+        // Get text from all input fields
         val newMedName = etEditMedName.text.toString()
         val newQuantity = etEditQuantity.text.toString()
         val newStock = etEditStock.text.toString()
         val newDosage = etEditDosage.text.toString()
         val newDosageUnit = etEditDosageUnit.text.toString()
-        val lastUpdate = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(Date())
+        val lastUpdate = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(Date()) // Current date
 
-        // CHANGED: Updated validation
+        // Validate that all fields are filled
         if (newMedName.isBlank() || newQuantity.isBlank() || newStock.isBlank() || newDosage.isBlank() || newDosageUnit.isBlank()) {
             Toast.makeText(this, "Please fill in all fields", Toast.LENGTH_SHORT).show()
             return
         }
 
-        // CHANGED: Create a map with all the data to update
+        // Prepare a map with updated values
         val updates = hashMapOf<String, Any>(
             "medicineName" to newMedName,
             "quantity" to newQuantity,
@@ -121,21 +116,21 @@ class Edit_Med_Stock : AppCompatActivity() {
             "lastUpdated" to lastUpdate
         )
 
-        // Save to Firestore
+        // Update Firestore document
         currentMedId?.let { medId ->
-            btnSaveChanges.isEnabled = false // Disable button to prevent double-click
-            btnSaveChanges.text = "Saving..."
+            btnSaveChanges.isEnabled = false   // Prevent multiple clicks
+            btnSaveChanges.text = "Saving..."  // Change button text while saving
 
             db.collection("medicines").document(medId)
                 .update(updates)
                 .addOnSuccessListener {
                     Toast.makeText(this, "Stock updated successfully!", Toast.LENGTH_SHORT).show()
-                    finish() // Close this activity and go back to the list
+                    finish() // Close activity and go back to the list
                 }
                 .addOnFailureListener { e ->
                     Toast.makeText(this, "Error saving: ${e.message}", Toast.LENGTH_LONG).show()
-                    btnSaveChanges.isEnabled = true // Re-enable button on failure
-                    btnSaveChanges.text = "Save Changes"
+                    btnSaveChanges.isEnabled = true    // Re-enable button on failure
+                    btnSaveChanges.text = "Save Changes" // Reset button text
                 }
         }
     }

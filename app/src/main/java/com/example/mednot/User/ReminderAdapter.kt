@@ -14,30 +14,34 @@ import com.google.firebase.firestore.FirebaseFirestore
 import java.text.SimpleDateFormat
 import java.util.*
 
+// Data class to store medicine information
 data class Medicine(
-    val id: String = "",
-    val medicineName: String = "",
-    val dosage: String = "",
-    val dosageUnit: String = "",
-    val startTime: String = "",
-    var status: String = "upcoming",
-    var takenAt: String = ""
+    val id: String = "",               // Unique ID in Firestore
+    val medicineName: String = "",     // Name of the medicine
+    val dosage: String = "",           // Dosage amount
+    val dosageUnit: String = "",       // Dosage unit (mg, ml, etc.)
+    val startTime: String = "",        // Time to take medicine
+    var status: String = "upcoming",   // Current status (upcoming, taken, missed, complete)
+    var takenAt: String = ""           // Time when medicine was taken
 )
 
+// Adapter to link medicine list to RecyclerView
 class ReminderAdapter(
-    private val medicineList: MutableList<Medicine>,
-    private val onMedicineStatusChanged: (() -> Unit)? = null
+    private val medicineList: MutableList<Medicine>,          // List of medicines
+    private val onMedicineStatusChanged: (() -> Unit)? = null // Callback when medicine status changes
 ) : RecyclerView.Adapter<ReminderAdapter.MedicineViewHolder>() {
 
-    private val firestore = FirebaseFirestore.getInstance()
+    private val firestore = FirebaseFirestore.getInstance() // Firestore database instance
 
+    // ViewHolder holds references to UI elements for one medicine item
     class MedicineViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-        val tvMedicineName: TextView = itemView.findViewById(R.id.tvMedicineName)
-        val tvStatus: TextView = itemView.findViewById(R.id.tvStatus)
-        val tvDosageTime: TextView? = itemView.findViewById(R.id.tvDosageTime)
-        val btnTake: Button? = itemView.findViewById(R.id.btnTake)
+        val tvMedicineName: TextView = itemView.findViewById(R.id.tvMedicineName) // Medicine name
+        val tvStatus: TextView = itemView.findViewById(R.id.tvStatus)             // Status text
+        val tvDosageTime: TextView? = itemView.findViewById(R.id.tvDosageTime)   // Time + dosage
+        val btnTake: Button? = itemView.findViewById(R.id.btnTake)                // Button to mark as taken
     }
 
+    // Called to create a new item view
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MedicineViewHolder {
         Log.d("ReminderAdapter", "onCreateViewHolder called")
         val view = LayoutInflater.from(parent.context)
@@ -45,23 +49,31 @@ class ReminderAdapter(
         return MedicineViewHolder(view)
     }
 
+    // Returns the number of items in the list
     override fun getItemCount(): Int {
         Log.d("ReminderAdapter", "getItemCount: ${medicineList.size}")
         return medicineList.size
     }
 
+    // Called for each item to bind data to UI
     override fun onBindViewHolder(holder: MedicineViewHolder, position: Int) {
         Log.d("ReminderAdapter", "onBindViewHolder called for position: $position")
 
         try {
             val currentMedicine = medicineList[position]
 
+            // Set medicine name with an emoji
             holder.tvMedicineName.text = "💊 ${currentMedicine.medicineName}"
+
+            // Set dosage and time text
             holder.tvDosageTime?.text = "${currentMedicine.startTime} | ${currentMedicine.dosage} ${currentMedicine.dosageUnit}"
+
+            // Set status text (capitalize first letter)
             holder.tvStatus.text = "Status: ${currentMedicine.status.replaceFirstChar { it.uppercase() }}"
 
             val button = holder.btnTake
 
+            // Change button text & color based on medicine status
             when (currentMedicine.status.lowercase()) {
                 "taken", "complete" -> {
                     button?.text = "Taken ✓"
@@ -83,19 +95,21 @@ class ReminderAdapter(
                 }
             }
 
+            // Button click listener
             button?.setOnClickListener {
+                // Only show dialog if medicine is not already taken/missed
                 if (currentMedicine.status.lowercase() !in listOf("taken", "complete", "missed")) {
                     showTakeConfirmationDialog(holder, currentMedicine, position)
                 }
             }
 
-            // CHANGED: Fixed .name to .medicineName
             Log.d("ReminderAdapter", "Successfully bound medicine: ${currentMedicine.medicineName}")
         } catch (e: Exception) {
             Log.e("ReminderAdapter", "Error binding view at position $position: ${e.message}", e)
         }
     }
 
+    // Show confirmation dialog before marking as taken
     private fun showTakeConfirmationDialog(
         holder: MedicineViewHolder,
         medicine: Medicine,
@@ -119,36 +133,43 @@ class ReminderAdapter(
         }
     }
 
+    // Mark the medicine as taken in Firestore and update UI
     private fun markAsTaken(medicine: Medicine, position: Int, holder: MedicineViewHolder) {
         Log.d("ReminderAdapter", "Marking medicine as taken: ${medicine.medicineName}")
 
+        // Get current time in two formats
         val currentTime = SimpleDateFormat("hh:mm a", Locale.getDefault()).format(Date())
         val currentDateTime = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault()).format(Date())
 
+        // Prepare updates for Firestore
         val updates = hashMapOf<String, Any>(
             "status" to "complete",
             "takenAt" to currentTime,
             "completedDateTime" to currentDateTime
         )
 
+        // Update Firestore document
         firestore.collection("medicines")
             .document(medicine.id)
             .update(updates)
             .addOnSuccessListener {
                 Log.d("ReminderAdapter", "Successfully updated status in Firestore")
 
+                // Update local list and refresh UI
                 if (position < medicineList.size) {
                     medicineList[position].status = "complete"
                     medicineList[position].takenAt = currentTime
                     notifyItemChanged(position)
                 }
 
+                // Show a toast message
                 Toast.makeText(
                     holder.itemView.context,
                     "✓ ${medicine.medicineName} marked as taken at $currentTime",
                     Toast.LENGTH_SHORT
                 ).show()
 
+                // Call optional callback
                 onMedicineStatusChanged?.invoke()
             }
             .addOnFailureListener { e ->
