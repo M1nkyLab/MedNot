@@ -28,6 +28,7 @@
         <activity android:name=".User.Home" />
         <activity android:name=".User.User_View_Reminders" />
         <activity android:name=".Auth.Auth_Register" />
+        <activity android:name=".User.Edit_Med_Stock" />
         <activity
             android:name=".Auth.Auth_Login"
             android:exported="true">

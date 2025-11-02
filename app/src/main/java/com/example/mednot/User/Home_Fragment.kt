@@ -31,7 +31,7 @@ class Home_Fragment : Fragment() {
     private lateinit var todayRecyclerView: RecyclerView
     private lateinit var todayAdapter: ReminderAdapter
     private val todayList = mutableListOf<Medicine>()
-    private lateinit var tvNoReminders: TextView
+    // private lateinit var tvNoReminders: TextView // CHANGED: Removed this line
 
     // Views for medication history
     private lateinit var historyRecyclerView: RecyclerView
@@ -65,7 +65,7 @@ class Home_Fragment : Fragment() {
 
     private fun setupReminderViews(view: View) {
         // Setup for Today's Reminders
-        tvNoReminders = view.findViewById(R.id.tvNoReminders)
+        // tvNoReminders = view.findViewById(R.id.tvNoReminders) // CHANGED: Removed this line
         todayRecyclerView = view.findViewById(R.id.todayRemindersRecyclerView)
         todayRecyclerView.layoutManager = LinearLayoutManager(requireContext())
         // Add callback to refresh data when medicine status changes
@@ -252,7 +252,7 @@ class Home_Fragment : Fragment() {
     private fun updateReminderLists() {
         // Update today's reminders UI
         todayAdapter.notifyDataSetChanged()
-        tvNoReminders.visibility = if (todayList.isEmpty()) View.VISIBLE else View.GONE
+        // tvNoReminders.visibility = if (todayList.isEmpty()) View.VISIBLE else View.GONE // CHANGED: Removed this line
         todayRecyclerView.visibility = if (todayList.isEmpty()) View.GONE else View.VISIBLE
 
         // Update history UI

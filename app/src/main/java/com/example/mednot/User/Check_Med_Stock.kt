@@ -1,8 +1,12 @@
 package com.example.mednot.User
 
+import android.content.Intent
 import android.os.Bundle
+import android.widget.Button
 import android.widget.LinearLayout
 import android.widget.TextView
+import android.widget.Toast
+// import androidx.appcompat.app.AlertDialog // CHANGED: No longer needed
 import androidx.appcompat.app.AppCompatActivity
 import com.example.mednot.R
 import com.google.firebase.auth.FirebaseAuth
@@ -26,7 +30,7 @@ class Check_Med_Stock : AppCompatActivity() {
         loadMedicines()
     }
 
-    private fun loadMedicines() {
+    fun loadMedicines() {
         val uid = firebaseAuth.currentUser?.uid ?: return
 
         db.collection("medicines")
@@ -44,6 +48,7 @@ class Check_Med_Stock : AppCompatActivity() {
                 }
 
                 for (doc in result) {
+                    val docId = doc.id
                     val medName = doc.getString("medicineName") ?: "Unknown"
                     val quantity = doc.getString("quantity") ?: "0"
                     val remaining = doc.getString("stock") ?: "0"
@@ -52,7 +57,7 @@ class Check_Med_Stock : AppCompatActivity() {
                     val lastUpdate = doc.getString("lastUpdated") ?: "N/A"
 
                     // Inflate card layout
-                    val cardView = layoutInflater.inflate(R.layout.item_card_medicine, containerLayout, false)
+                    val cardView = layoutInflater.inflate(R.layout.item_checkstock, containerLayout, false)
 
                     // Bind data
                     val tvMedName = cardView.findViewById<TextView>(R.id.tvMedName)
@@ -60,7 +65,7 @@ class Check_Med_Stock : AppCompatActivity() {
                     val tvRemaining = cardView.findViewById<TextView>(R.id.tvRemaining)
                     val tvDosage = cardView.findViewById<TextView>(R.id.tvDosage)
                     val tvLastUpdated = cardView.findViewById<TextView>(R.id.tvLastUpdated)
-                    val tvLowStock = cardView.findViewById<TextView>(R.id.tvLowStockWarning)
+                    // val tvLowStock = cardView.findViewById<TextView>(R.id.tvLowStockWarning) // CHANGED: Removed
 
                     tvMedName.text = medName
                     tvQuantity.text = "Quantity: $quantity"
@@ -68,16 +73,32 @@ class Check_Med_Stock : AppCompatActivity() {
                     tvDosage.text = "Dosage: $dosage $dosageUnit"
                     tvLastUpdated.text = "Last Updated: $lastUpdate"
 
-                    // Low stock warning (threshold e.g. < 10)
-                    val remainingInt = remaining.toIntOrNull() ?: 0
-                    if (remainingInt < 10) {
-                        tvLowStock.visibility = TextView.VISIBLE
+                    // CHANGED: Removed low stock logic block
+
+                    // --- Button Logic ---
+                    val btnEdit = cardView.findViewById<Button>(R.id.btnEditStock)
+                    val btnDelete = cardView.findViewById<Button>(R.id.btnDeleteStock)
+
+                    // Set Edit listener
+                    btnEdit.setOnClickListener {
+                        // TODO: Create an "EditStockActivity" to handle editing
+                        val intent = Intent(this, Edit_Med_Stock::class.java)
+                            intent.putExtra("MEDICINE_ID", docId)
+                            startActivity(intent)
+
+                        Toast.makeText(this, "Edit: $medName (ID: $docId)", Toast.LENGTH_SHORT).show()
+                    }
+
+                    // CHANGED: Set Delete listener to delete directly
+                    btnDelete.setOnClickListener {
+                        deleteMedicine(docId)
                     }
 
                     containerLayout.addView(cardView)
                 }
             }
             .addOnFailureListener {
+                containerLayout.removeAllViews()
                 val errorText = TextView(this)
                 errorText.text = "Failed to load medicines: ${it.message}"
                 errorText.textSize = 16f
@@ -86,5 +107,24 @@ class Check_Med_Stock : AppCompatActivity() {
             }
     }
 
-}
+    // --- CHANGED: Removed the showDeleteConfirmationDialog function ---
 
+    // --- This function handles the actual deletion ---
+    private fun deleteMedicine(docId: String) {
+        db.collection("medicines").document(docId)
+            .delete()
+            .addOnSuccessListener {
+                Toast.makeText(this, "Medicine deleted", Toast.LENGTH_SHORT).show()
+                loadMedicines() // Refresh the list after deletion
+            }
+            .addOnFailureListener { e ->
+                Toast.makeText(this, "Error deleting medicine: ${e.message}", Toast.LENGTH_LONG).show()
+            }
+    }
+
+    // Refresh the list when the user comes back from the Edit activity
+    override fun onResume() {
+        super.onResume()
+        loadMedicines()
+    }
+}
