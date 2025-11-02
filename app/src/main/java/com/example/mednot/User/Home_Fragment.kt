@@ -162,6 +162,11 @@ class Home_Fragment : Fragment() {
                     // Get status field (default to "upcoming" if not present)
                     val status = document.getString("status") ?: "upcoming"
 
+                    // --- START OF CHANGE ---
+                    // Get stock string (used for both low stock calc and Medicine object)
+                    val stockStr = document.getString("stock") ?: "0"
+                    // --- END OF CHANGE ---
+
                     try {
                         // Convert to Medicine object
                         val medicine = Medicine(
@@ -171,7 +176,8 @@ class Home_Fragment : Fragment() {
                             dosageUnit = document.getString("dosageUnit") ?: "",
                             startTime = document.getString("startTime") ?: "",
                             status = status,
-                            takenAt = document.getString("takenAt") ?: ""
+                            takenAt = document.getString("takenAt") ?: "",
+                            stock = stockStr // ADDED: Pass the stock to the data class
                         )
 
                         // Sort into lists: "complete" and "taken" go to history, others to today
@@ -186,7 +192,7 @@ class Home_Fragment : Fragment() {
 
                         // Low stock calculation (same as before)
                         val name = document.getString("medicineName") ?: "Unnamed Medicine"
-                        val stockStr = document.getString("stock") ?: "0"
+                        // val stockStr = document.getString("stock") ?: "0" // <-- Already moved up
                         val stock = stockStr.toDoubleOrNull() ?: 0.0
                         val dosageUnit = document.getString("dosageUnit")?.lowercase() ?: ""
                         val scheduleMethod = document.getString("scheduleMethod")
@@ -260,12 +266,11 @@ class Home_Fragment : Fragment() {
         tvNoHistory.visibility = if (historyList.isEmpty()) View.VISIBLE else View.GONE
         historyRecyclerView.visibility = if (historyList.isEmpty()) View.GONE else View.VISIBLE
     }
-
     private fun updateLowStockUI(lowStockList: List<String>) {
         if (lowStockList.isNotEmpty()) {
             lowStockCountTextView.text = "${lowStockList.size} medicine(s) low:\n${lowStockList.joinToString(separator = "\n• ", prefix = "• ")}"
         } else {
-            lowStockCountTextView.text = "All medicines are well-stocked. ✓"
+            lowStockCountTextView.text = "All medicines are well-stocked."
         }
     }
 
