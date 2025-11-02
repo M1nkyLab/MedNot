@@ -68,14 +68,20 @@ class Home_Fragment : Fragment() {
         tvNoReminders = view.findViewById(R.id.tvNoReminders)
         todayRecyclerView = view.findViewById(R.id.todayRemindersRecyclerView)
         todayRecyclerView.layoutManager = LinearLayoutManager(requireContext())
-        todayAdapter = ReminderAdapter(todayList)
+        // Add callback to refresh data when medicine status changes
+        todayAdapter = ReminderAdapter(todayList) {
+            loadAllData() // Refresh all data when a medicine is marked as taken
+        }
         todayRecyclerView.adapter = todayAdapter
 
         // Setup for Medication History
         tvNoHistory = view.findViewById(R.id.tvNoHistory)
         historyRecyclerView = view.findViewById(R.id.medicationLogRecyclerView)
         historyRecyclerView.layoutManager = LinearLayoutManager(requireContext())
-        historyAdapter = ReminderAdapter(historyList)
+        // Add callback for history adapter too
+        historyAdapter = ReminderAdapter(historyList) {
+            loadAllData() // Refresh all data when a medicine is marked as taken
+        }
         historyRecyclerView.adapter = historyAdapter
     }
 
@@ -107,7 +113,6 @@ class Home_Fragment : Fragment() {
                 welcomeMessage.text = "Welcome!"
             }
     }
-
     private fun loadAllData() {
         val currentUser = auth.currentUser
         if (currentUser == null) {
@@ -158,18 +163,28 @@ class Home_Fragment : Fragment() {
                     val status = document.getString("status") ?: "upcoming"
 
                     try {
-                        // Convert to Medicine object using toObject
-                        val medicine = document.toObject(Medicine::class.java).copy(id = document.id)
+                        // Convert to Medicine object
+                        val medicine = Medicine(
+                            id = document.id,
+                            medicineName = document.getString("medicineName") ?: "",
+                            dosage = document.getString("dosage") ?: "",
+                            dosageUnit = document.getString("dosageUnit") ?: "",
+                            startTime = document.getString("startTime") ?: "",
+                            status = status,
+                            takenAt = document.getString("takenAt") ?: ""
+                        )
 
-                        // Sort into reminder lists based on status
-                        if (status.equals("complete", ignoreCase = true)) {
+                        // Sort into lists: "complete" and "taken" go to history, others to today
+                        if (status.lowercase() in listOf("complete", "taken")) {
                             historyList.add(medicine)
                         } else {
                             todayList.add(medicine)
-                            upcomingCount++
+                            if (status.lowercase() == "upcoming") {
+                                upcomingCount++
+                            }
                         }
 
-                        // low stock calculation
+                        // Low stock calculation (same as before)
                         val name = document.getString("medicineName") ?: "Unnamed Medicine"
                         val stockStr = document.getString("stock") ?: "0"
                         val stock = stockStr.toDoubleOrNull() ?: 0.0
@@ -178,10 +193,8 @@ class Home_Fragment : Fragment() {
                         val timesPerDay = document.getString("timesPerDay")
                         val intervalHours = document.getString("intervalHours")
                         val dosage = document.getString("dosage")?.toDoubleOrNull() ?: 1.0
-                        val durationDays = document.getString("duration")?.toDoubleOrNull() ?: 0.0
 
                         if (stock > 0) {
-                            // nie untuk kita sehari bape kali makan ubat
                             val dosesPerDay = when (scheduleMethod) {
                                 "Frequency" -> timesPerDay?.toDoubleOrNull() ?: 0.0
                                 "Interval" -> {
@@ -192,13 +205,10 @@ class Home_Fragment : Fragment() {
                             }
 
                             if (dosesPerDay > 0) {
-                                // nie untuk kira stock tinggal lagi untuk ape hari
                                 val daysRemaining = stock / dosesPerDay
 
-                                // untuk ccheck kalau stock ubat tu kurang dari 7 hari
                                 if (daysRemaining < 7) {
-                                    val daysLeft = daysRemaining.roundToInt().coerceAtLeast(0)
-                                    //
+                                    val daysLeft = daysRemaining.toInt().coerceAtLeast(0)
                                     val unitDisplay = when {
                                         dosageUnit.contains("tablet") -> "tablets"
                                         dosageUnit.contains("capsule") -> "capsules"
@@ -210,7 +220,6 @@ class Home_Fragment : Fragment() {
                                         else -> "units"
                                     }
 
-                                    // add to low stock list
                                     lowStockList.add(
                                         "$name (${stock.toInt()} $unitDisplay, ~${daysLeft} days left)"
                                     )
@@ -222,9 +231,9 @@ class Home_Fragment : Fragment() {
                     }
                 }
 
-                // Sort lists by time (if Medicine has startTime field)
+                // Sort lists
                 todayList.sortBy { it.startTime }
-                historyList.reverse() // Most recent first
+                historyList.sortByDescending { it.takenAt.ifEmpty { it.startTime } } // Most recent first
 
                 // Update all UI elements
                 todayMedCountTextView.text = "You have $upcomingCount medicine(s) scheduled for today."
@@ -240,7 +249,6 @@ class Home_Fragment : Fragment() {
                 lowStockCountTextView.text = "Error loading stock data."
             }
     }
-
     private fun updateReminderLists() {
         // Update today's reminders UI
         todayAdapter.notifyDataSetChanged()

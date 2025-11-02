@@ -1,29 +1,22 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#FFFFFF"
     android:orientation="vertical"
-    android:padding="16dp"
-    tools:context=".User.User_View_Reminders">
+    android:padding="16dp">
 
-    <!-- Page Title -->
     <TextView
         android:id="@+id/tvReminderTitle"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="16dp"
         android:text="Your Medicine Reminders"
-        android:textColor="#2E7D32"
-        android:textSize="22sp"
-        android:textStyle="bold" />
+        android:textSize="20sp"
+        android:textStyle="bold"
+        android:layout_marginBottom="16dp"/>
 
-    <!-- 1. Replaced ListView with RecyclerView for better performance -->
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/remindersRecyclerView"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        tools:listitem="@layout/item_reminder_today_medicines_schedule" />
+        android:layout_height="match_parent"/>
 
 </LinearLayout>

@@ -1,6 +1,7 @@
 package com.example.mednot.User
 
 import android.os.Bundle
+import android.util.Log
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
@@ -13,67 +14,99 @@ import com.google.firebase.firestore.Query
 
 class User_View_Reminders : AppCompatActivity() {
 
-    // Use RecyclerView
     private lateinit var remindersRecyclerView: RecyclerView
     private lateinit var tvReminderTitle: TextView
     private val auth = FirebaseAuth.getInstance()
     private val firestore = FirebaseFirestore.getInstance()
 
-    // The list now correctly holds Medicine objects
     private val medicineList = mutableListOf<Medicine>()
     private lateinit var reminderAdapter: ReminderAdapter
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        // Make sure your layout file uses a RecyclerView with the id "remindersRecyclerView"
         setContentView(R.layout.user_view_reminders)
 
+        Log.d("ViewReminders", "onCreate called")
+
         tvReminderTitle = findViewById(R.id.tvReminderTitle)
+        remindersRecyclerView = findViewById(R.id.remindersRecyclerView)
 
         // Setup RecyclerView
-        remindersRecyclerView = findViewById(R.id.remindersRecyclerView) // Ensure this ID matches your XML
         remindersRecyclerView.layoutManager = LinearLayoutManager(this)
 
-        // --- THIS IS THE MAIN FIX ---
-        // Initialize the adapter correctly with only the list it needs.
-        reminderAdapter = ReminderAdapter(medicineList)
+        // Initialize adapter with callback
+        reminderAdapter = ReminderAdapter(medicineList) {
+            loadReminders()
+        }
         remindersRecyclerView.adapter = reminderAdapter
 
-        // Load the reminders
+        Log.d("ViewReminders", "RecyclerView setup complete")
+
         loadReminders()
     }
 
     private fun loadReminders() {
         val uid = auth.currentUser?.uid
+
+        Log.d("ViewReminders", "loadReminders called")
+        Log.d("ViewReminders", "Current user UID: $uid")
+
         if (uid == null) {
             tvReminderTitle.text = "Please log in to view reminders"
+            Log.e("ViewReminders", "User not logged in")
             return
         }
 
-        // Fetch data from the "medicines" collection, not a sub-collection
+        tvReminderTitle.text = "Loading reminders..."
+
         firestore.collection("medicines")
             .whereEqualTo("userId", uid)
             .orderBy("startTime", Query.Direction.ASCENDING)
             .get()
             .addOnSuccessListener { result ->
-                // Clear the list before adding new data
+                Log.d("ViewReminders", "Firestore query successful")
+                Log.d("ViewReminders", "Documents found: ${result.size()}")
+
                 medicineList.clear()
 
                 for (document in result) {
-                    // Convert each Firestore document into a Medicine object
-                    // Note: Ensure your Medicine data class fields match Firestore exactly
-                    val medicine = document.toObject(Medicine::class.java).copy(id = document.id)
-                    medicineList.add(medicine)
+                    Log.d("ViewReminders", "Processing document: ${document.id}")
+                    Log.d("ViewReminders", "Document data: ${document.data}")
+
+                    try {
+                        val medicine = Medicine(
+                            id = document.id,
+                            medicineName = document.getString("medicineName") ?: "",
+                            dosage = document.getString("dosage") ?: "",
+                            dosageUnit = document.getString("dosageUnit") ?: "",
+                            startTime = document.getString("startTime") ?: "",
+                            status = document.getString("status") ?: "upcoming"
+                        )
+
+                        Log.d("ViewReminders", "Medicine created: ${medicine.medicineName}")
+                        medicineList.add(medicine)
+                    } catch (e: Exception) {
+                        Log.e("ViewReminders", "Error parsing medicine: ${e.message}", e)
+                        Toast.makeText(this, "Error parsing medicine: ${e.message}", Toast.LENGTH_SHORT).show()
+                    }
                 }
 
-                // Notify the adapter that the underlying data has changed
+                Log.d("ViewReminders", "Total medicines in list: ${medicineList.size}")
+
                 reminderAdapter.notifyDataSetChanged()
 
-                tvReminderTitle.text = "Your Medicine Reminders (${medicineList.size})"
+                if (medicineList.isEmpty()) {
+                    tvReminderTitle.text = "No reminders found"
+                    Log.d("ViewReminders", "No medicines to display")
+                } else {
+                    tvReminderTitle.text = "Your Medicine Reminders (${medicineList.size})"
+                    Log.d("ViewReminders", "Displaying ${medicineList.size} medicines")
+                }
             }
             .addOnFailureListener { e ->
+                Log.e("ViewReminders", "Firestore query failed: ${e.message}", e)
                 tvReminderTitle.text = "Failed to load reminders"
-                Toast.makeText(this, "Error: ${e.message}", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this, "Error: ${e.message}", Toast.LENGTH_LONG).show()
             }
     }
 }
