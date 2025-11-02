@@ -6,18 +6,17 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.*
-import androidx.fragment.app.Fragment // 1. Changed from AppCompatActivity to Fragment
+import androidx.fragment.app.Fragment
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import java.util.Calendar
 
-// 2. Class now inherits from Fragment
 class Add_Med_Fragment : Fragment() {
 
     private lateinit var firebaseAuth: FirebaseAuth
     private lateinit var db: FirebaseFirestore
 
-    // Declare all view components
+    // ... (All your view components) ...
     private lateinit var inputMedicineName: EditText
     private lateinit var inputDosage: EditText
     private lateinit var spinnerDosageUnit: Spinner
@@ -33,19 +32,18 @@ class Add_Med_Fragment : Fragment() {
     private lateinit var inputStock: EditText
     private lateinit var btnSaveMedicine: Button
 
-    // 3. Use onCreateView to setup the fragment's view
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        // Inflate the layout for this fragment
         val view = inflater.inflate(R.layout.user_add_medicine_fragment, container, false)
 
         // Initialize Firebase
         firebaseAuth = FirebaseAuth.getInstance()
         db = FirebaseFirestore.getInstance()
 
-        // 4. Link all variables using view.findViewById
+        // Link all variables
         inputMedicineName = view.findViewById(R.id.inputMedicineName)
         inputDosage = view.findViewById(R.id.inputDosage)
         spinnerDosageUnit = view.findViewById(R.id.spinnerDosageUnit)
@@ -67,8 +65,8 @@ class Add_Med_Fragment : Fragment() {
         return view
     }
 
+    // ... (setupSpinners, setupListeners, showTimePickerDialog are unchanged) ...
     private fun setupSpinners() {
-        // 5. Use requireContext() instead of 'this' in a Fragment
         ArrayAdapter.createFromResource(
             requireContext(), R.array.dosage_units, android.R.layout.simple_spinner_item
         ).also {
@@ -118,6 +116,7 @@ class Add_Med_Fragment : Fragment() {
         }, hour, minute, false).show()
     }
 
+
     private fun saveMedicine() {
         val uid = firebaseAuth.currentUser?.uid ?: return
         val medicineName = inputMedicineName.text.toString().trim()
@@ -132,10 +131,35 @@ class Add_Med_Fragment : Fragment() {
         val duration = inputDuration.text.toString().trim()
         val stock = inputStock.text.toString().trim()
 
+        // --- VALIDATION 1: Name ---
         if (medicineName.isEmpty()) {
             inputMedicineName.error = "Please enter medicine name"
             return
         }
+
+        // --- VALIDATION 2: Dosage & Stock ---
+        if (dosage.isEmpty() || dosage.toDoubleOrNull() == null) {
+            inputDosage.error = "Please enter a valid number for dosage"
+            return
+        }
+        if (stock.isEmpty() || stock.toDoubleOrNull() == null) {
+            inputStock.error = "Please enter a valid number for stock"
+            return
+        }
+
+        // --- START OF FIX: VALIDATION 3: Schedule ---
+        if (scheduleMethod == "Frequency") {
+            if (timesPerDay.isEmpty() || timesPerDay.toDoubleOrNull() == null || timesPerDay.toDouble() <= 0) {
+                inputTimesPerDay.error = "Must be a number greater than 0"
+                return
+            }
+        } else { // scheduleMethod == "Interval"
+            if (intervalHours.isEmpty() || intervalHours.toDoubleOrNull() == null || intervalHours.toDouble() <= 0) {
+                inputIntervalHours.error = "Must be a number greater than 0"
+                return
+            }
+        }
+        // --- END OF FIX ---
 
         val medData = hashMapOf(
             "userId" to uid,
@@ -145,8 +169,9 @@ class Add_Med_Fragment : Fragment() {
             "medicationType" to medicationType,
             "instruction" to instruction,
             "scheduleMethod" to scheduleMethod,
-            "timesPerDay" to timesPerDay,
-            "intervalHours" to intervalHours,
+            // Clean up data so only the relevant field is saved
+            "timesPerDay" to if (scheduleMethod == "Frequency") timesPerDay else "",
+            "intervalHours" to if (scheduleMethod == "Interval") intervalHours else "",
             "startTime" to startTime,
             "durationDays" to duration,
             "stock" to stock,

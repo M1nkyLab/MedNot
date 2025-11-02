@@ -205,7 +205,7 @@
             android:layout_marginBottom="24dp"
             android:background="@android:drawable/edit_text"
             android:hint="e.g., 60"
-            android:inputType="number"
+            android:inputType="numberDecimal"
             android:padding="12dp"
             android:text="0" />
 
