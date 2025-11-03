@@ -8,13 +8,10 @@ import androidx.appcompat.app.AppCompatActivity
 import com.example.mednot.R
 import com.google.android.material.textfield.TextInputEditText
 import com.google.firebase.firestore.FirebaseFirestore
-import java.text.SimpleDateFormat
-import java.util.Date
-import java.util.Locale
 
 class Edit_Med_Stock : AppCompatActivity() {
 
-    // ... (All your view variables) ...
+    // Declare all the view components used in this activity
     private lateinit var tvEditTitle: TextView
     private lateinit var etEditMedName: TextInputEditText
     private lateinit var etEditStock: TextInputEditText
@@ -22,13 +19,17 @@ class Edit_Med_Stock : AppCompatActivity() {
     private lateinit var etEditDosageUnit: TextInputEditText
     private lateinit var btnSaveChanges: Button
 
+    // Initialize Firestore database instance
     private val db = FirebaseFirestore.getInstance()
+
+    // Variable to store the current medicine ID
     private var currentMedId: String? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.edit_med_stock)
 
+        // Get medicine ID passed from previous activity
         currentMedId = intent.getStringExtra("MEDICINE_ID")
         if (currentMedId == null) {
             Toast.makeText(this, "Error: Medicine ID not found", Toast.LENGTH_LONG).show()
@@ -36,7 +37,7 @@ class Edit_Med_Stock : AppCompatActivity() {
             return
         }
 
-        // Initialize views
+        // Link all the view components with the layout elements
         tvEditTitle = findViewById(R.id.tvEditTitle)
         etEditMedName = findViewById(R.id.etEditMedName)
         etEditStock = findViewById(R.id.etEditStock)
@@ -44,61 +45,63 @@ class Edit_Med_Stock : AppCompatActivity() {
         etEditDosageUnit = findViewById(R.id.etEditDosageUnit)
         btnSaveChanges = findViewById(R.id.btnSaveChanges)
 
+        // Load data from Firestore for this medicine
         loadMedicineData()
 
+        // Save data when the save button is clicked
         btnSaveChanges.setOnClickListener {
             saveMedicineData()
         }
     }
 
-    // ... (loadMedicineData is unchanged) ...
+    // This function loads existing medicine data from Firestore
     private fun loadMedicineData() {
         currentMedId?.let { medId ->
             db.collection("medicines").document(medId)
                 .get()
                 .addOnSuccessListener { document ->
                     if (document != null && document.exists()) {
-                        // Load all fields from the document
+                        // Read data from the Firestore document
                         val medName = document.getString("medicineName") ?: "N/A"
                         val quantity = document.getString("quantity") ?: "0"
                         val stock = document.getString("stock") ?: "0"
                         val dosage = document.getString("dosage") ?: "0"
                         val dosageUnit = document.getString("dosageUnit") ?: ""
 
-                        // Set text in editable fields
+                        // Display the data in the text fields
                         etEditMedName.setText(medName)
                         etEditStock.setText(stock)
                         etEditDosage.setText(dosage)
                         etEditDosageUnit.setText(dosageUnit)
-
                     } else {
+                        // Show an error if no document is found
                         Toast.makeText(this, "Error: Medicine not found", Toast.LENGTH_LONG).show()
-                        finish() // Close if medicine does not exist
+                        finish()
                     }
                 }
                 .addOnFailureListener { e ->
+                    // Show an error message if data fails to load
                     Toast.makeText(this, "Error loading data: ${e.message}", Toast.LENGTH_LONG).show()
-                    finish() // Close on failure
+                    finish()
                 }
         }
     }
 
-
+    // This function saves updated medicine data back to Firestore
     private fun saveMedicineData() {
-        // Get text from all input fields
+        // Get values from input fields
         val newMedName = etEditMedName.text.toString()
         val newStock = etEditStock.text.toString()
         val newDosage = etEditDosage.text.toString()
         val newDosageUnit = etEditDosageUnit.text.toString()
 
-        // Validate that all fields are filled
-        if (newMedName.isBlank()  || newStock.isBlank() || newDosage.isBlank() || newDosageUnit.isBlank()) {
+        // Check if any field is empty
+        if (newMedName.isBlank() || newStock.isBlank() || newDosage.isBlank() || newDosageUnit.isBlank()) {
             Toast.makeText(this, "Please fill in all fields", Toast.LENGTH_SHORT).show()
             return
         }
 
-        // --- START OF FIX ---
-        // ADDED VALIDATION
+        // Validate that stock and dosage contain valid numbers
         if (newStock.toDoubleOrNull() == null) {
             etEditStock.error = "Please enter a valid number for stock"
             return
@@ -107,9 +110,8 @@ class Edit_Med_Stock : AppCompatActivity() {
             etEditDosage.error = "Please enter a valid number for dosage"
             return
         }
-        // --- END OF FIX ---
 
-        // Prepare a map with updated values
+        // Create a map with updated values
         val updates = hashMapOf<String, Any>(
             "medicineName" to newMedName,
             "stock" to newStock,
@@ -117,7 +119,7 @@ class Edit_Med_Stock : AppCompatActivity() {
             "dosageUnit" to newDosageUnit
         )
 
-        // Update Firestore document
+        // Update the Firestore document using the medicine ID
         currentMedId?.let { medId ->
             btnSaveChanges.isEnabled = false
             btnSaveChanges.text = "Saving..."
@@ -125,10 +127,12 @@ class Edit_Med_Stock : AppCompatActivity() {
             db.collection("medicines").document(medId)
                 .update(updates)
                 .addOnSuccessListener {
+                    // Show success message and close the screen
                     Toast.makeText(this, "Stock updated successfully!", Toast.LENGTH_SHORT).show()
                     finish()
                 }
                 .addOnFailureListener { e ->
+                    // Show error message if saving fails
                     Toast.makeText(this, "Error saving: ${e.message}", Toast.LENGTH_LONG).show()
                     btnSaveChanges.isEnabled = true
                     btnSaveChanges.text = "Save Changes"

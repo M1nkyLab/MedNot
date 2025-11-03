@@ -14,34 +14,35 @@ import com.google.firebase.firestore.FirebaseFirestore
 import java.text.SimpleDateFormat
 import java.util.*
 
-// Data class (Unchanged)
+// Data class: holds information for each medicine reminder
 data class Medicine(
-    val id: String = "",
-    val medicineName: String = "",
-    val dosage: String = "",
-    val dosageUnit: String = "",
-    val startTime: String = "",
-    var status: String = "upcoming",
-    var takenAt: String = "",
-    var stock: String = "0"
+    val id: String = "",          // Unique ID for this medicine (from Firestore)
+    val medicineName: String = "",// Name of medicine
+    val dosage: String = "",      // How much to take (e.g., "2")
+    val dosageUnit: String = "",  // Unit of dosage (e.g., "tablet", "ml")
+    val startTime: String = "",   // Time to take the medicine
+    var status: String = "upcoming", // Current status: upcoming, complete, or missed
+    var takenAt: String = "",     // Time when user marked it as taken
+    var stock: String = "0"       // Remaining stock in the bottle
 )
 
+// ReminderAdapter: shows list of medicines using RecyclerView
 class ReminderAdapter(
-    private val medicineList: MutableList<Medicine>,
-    private val onMedicineStatusChanged: (() -> Unit)? = null
+    private val medicineList: MutableList<Medicine>,          // List of all medicines
+    private val onMedicineStatusChanged: (() -> Unit)? = null // Callback when status changes
 ) : RecyclerView.Adapter<ReminderAdapter.MedicineViewHolder>() {
 
-    private val firestore = FirebaseFirestore.getInstance()
+    private val firestore = FirebaseFirestore.getInstance() // Connect to Firebase Firestore
 
-    // ViewHolder (Unchanged)
+    // ViewHolder: holds all views for each medicine item
     class MedicineViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-        val tvMedicineName: TextView = itemView.findViewById(R.id.tvMedicineName)
-        val tvStatus: TextView = itemView.findViewById(R.id.tvStatus)
-        val tvDosageTime: TextView? = itemView.findViewById(R.id.tvDosageTime)
-        val btnTake: Button? = itemView.findViewById(R.id.btnTake)
+        val tvMedicineName: TextView = itemView.findViewById(R.id.tvMedicineName) // Medicine name text
+        val tvStatus: TextView = itemView.findViewById(R.id.tvStatus)             // Status text (Upcoming / Taken / Missed)
+        val tvDosageTime: TextView? = itemView.findViewById(R.id.tvDosageTime)    // Shows time and dosage
+        val btnTake: Button? = itemView.findViewById(R.id.btnTake)                // Button to mark as taken
     }
 
-    // onCreateViewHolder (Unchanged)
+    // Creates new ViewHolder when needed
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MedicineViewHolder {
         Log.d("ReminderAdapter", "onCreateViewHolder called")
         val view = LayoutInflater.from(parent.context)
@@ -49,47 +50,58 @@ class ReminderAdapter(
         return MedicineViewHolder(view)
     }
 
-    // getItemCount (Unchanged)
+    // Returns how many items are in the list
     override fun getItemCount(): Int {
         Log.d("ReminderAdapter", "getItemCount: ${medicineList.size}")
         return medicineList.size
     }
 
-    // onBindViewHolder (Unchanged)
+    // Binds data from the list to the views (called for every item)
     override fun onBindViewHolder(holder: MedicineViewHolder, position: Int) {
         Log.d("ReminderAdapter", "onBindViewHolder called for position: $position")
 
         try {
             val currentMedicine = medicineList[position]
 
+            // Set the text for name, time, and dosage
             holder.tvMedicineName.text = "💊 ${currentMedicine.medicineName}"
-            holder.tvDosageTime?.text = "${currentMedicine.startTime} | ${currentMedicine.dosage} ${currentMedicine.dosageUnit}"
-            holder.tvStatus.text = "Status: ${currentMedicine.status.replaceFirstChar { it.uppercase() }}"
+            holder.tvDosageTime?.text =
+                "${currentMedicine.startTime} | ${currentMedicine.dosage} ${currentMedicine.dosageUnit}"
+            holder.tvStatus.text =
+                "Status: ${currentMedicine.status.replaceFirstChar { it.uppercase() }}"
 
             val button = holder.btnTake
 
+            // Change button style and color based on medicine status
             when (currentMedicine.status.lowercase()) {
                 "taken", "complete" -> {
+                    // Already taken
                     button?.text = "Taken"
                     button?.isEnabled = false
                     button?.alpha = 0.5f
-                    holder.tvStatus.setTextColor(0xFF4CAF50.toInt()) // Green
+                    holder.tvStatus.setTextColor(0xFF4CAF50.toInt()) // Green color
                 }
+
                 "missed" -> {
+                    // Missed dose
                     button?.text = "Missed"
                     button?.isEnabled = false
                     button?.alpha = 0.5f
-                    holder.tvStatus.setTextColor(0xFFF44336.toInt()) // Red
+                    holder.tvStatus.setTextColor(0xFFF44336.toInt()) // Red color
                 }
+
                 else -> {
+                    // Upcoming dose (not yet taken)
                     button?.text = "Mark as Taken"
                     button?.isEnabled = true
                     button?.alpha = 1.0f
-                    holder.tvStatus.setTextColor(0xFF00796B.toInt()) // Teal
+                    holder.tvStatus.setTextColor(0xFF00796B.toInt()) // Teal color
                 }
             }
 
+            // When user clicks "Mark as Taken" button
             button?.setOnClickListener {
+                // Only allow marking if not already complete or missed
                 if (currentMedicine.status.lowercase() !in listOf("taken", "complete", "missed")) {
                     showTakeConfirmationDialog(holder, currentMedicine, position)
                 }
@@ -97,11 +109,11 @@ class ReminderAdapter(
 
             Log.d("ReminderAdapter", "Successfully bound medicine: ${currentMedicine.medicineName}")
         } catch (e: Exception) {
-            Log.e("ReminderAdapter", "Error binding view at position $position: ${e.message}", e)
+            Log.e("ReminderAdapter", "Error binding view: ${e.message}", e)
         }
     }
 
-    // showTakeConfirmationDialog (Unchanged)
+    // Show a confirmation dialog before marking as taken
     private fun showTakeConfirmationDialog(
         holder: MedicineViewHolder,
         medicine: Medicine,
@@ -112,7 +124,7 @@ class ReminderAdapter(
                 .setTitle("Confirm")
                 .setMessage("Mark ${medicine.medicineName} as taken?")
                 .setPositiveButton("Yes") { dialog, _ ->
-                    markAsTaken(medicine, position, holder)
+                    markAsTaken(medicine, position, holder) // Call the update function
                     dialog.dismiss()
                 }
                 .setNegativeButton("Cancel") { dialog, _ ->
@@ -125,75 +137,70 @@ class ReminderAdapter(
         }
     }
 
-    // Mark the medicine as taken in Firestore and update UI
+    // Mark the medicine as "Taken" in Firestore and update the app screen
     private fun markAsTaken(medicine: Medicine, position: Int, holder: MedicineViewHolder) {
         Log.d("ReminderAdapter", "Marking medicine as taken: ${medicine.medicineName}")
 
-        val currentStock = medicine.stock.toDoubleOrNull() ?: 0.0
+        val currentStock = medicine.stock.toDoubleOrNull() ?: 0.0 // Convert stock to number
 
-        // --- START OF LOGIC FIX ---
+        // Decide how much stock to reduce
         val dosageToDeduct: Double
         val unit = medicine.dosageUnit.lowercase()
 
         if (unit.contains("tablet") || unit.contains("capsule") || unit.contains("pill")) {
-            // If the unit is a countable item (tablet, capsule),
-            // deduct the dosage amount (e.g., "2" tablets).
+            // If medicine counted by pieces, reduce based on dosage (e.g., 2 tablets)
             dosageToDeduct = medicine.dosage.toDoubleOrNull() ?: 1.0
         } else {
-            // If the unit is "mg", "ml", "g", etc., the stock is counted in "doses",
-            // so we only deduct 1 dose.
+            // If measured by mg, ml, etc., just reduce 1 dose
             dosageToDeduct = 1.0
         }
 
         Log.d("ReminderAdapter", "Deducting: $dosageToDeduct from $currentStock for unit '$unit'")
-        // --- END OF LOGIC FIX ---
 
-        var newStock = currentStock
+        var newStock = currentStock - dosageToDeduct
+        if (newStock < 0) newStock = 0.0 // Do not allow negative stock
 
-        if (dosageToDeduct > 0) {
-            newStock = currentStock - dosageToDeduct
-            if (newStock < 0) {
-                newStock = 0.0 // Don't allow negative stock
-                Log.w("ReminderAdapter", "${medicine.medicineName} stock is now 0 or negative.")
-            }
-        } else {
-            Log.w("ReminderAdapter", "Dosage for ${medicine.medicineName} is 0 or invalid, not deducting stock.")
-        }
+        val newStockString = newStock.toString() // Convert back to text
+        val currentTime = SimpleDateFormat("hh:mm a", Locale.getDefault()).format(Date()) // Example: 10:30 AM
+        val currentDateTime =
+            SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault()).format(Date())   // Example: 2025-11-03 10:30:00
 
-        val newStockString = newStock.toString()
-        val currentTime = SimpleDateFormat("hh:mm a", Locale.getDefault()).format(Date())
-        val currentDateTime = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault()).format(Date())
-
+        // Prepare data to update in Firestore
         val updates = hashMapOf<String, Any>(
             "status" to "complete",
             "takenAt" to currentTime,
             "completedDateTime" to currentDateTime,
-            "stock" to newStockString  // Update the stock
+            "stock" to newStockString
         )
 
+        // Update medicine info in Firestore database
         firestore.collection("medicines")
             .document(medicine.id)
             .update(updates)
             .addOnSuccessListener {
                 Log.d("ReminderAdapter", "Successfully updated status and stock in Firestore")
 
+                // Update local data too (so RecyclerView refreshes)
                 if (position < medicineList.size) {
                     medicineList[position].status = "complete"
                     medicineList[position].takenAt = currentTime
-                    medicineList[position].stock = newStockString // Update local stock
+                    medicineList[position].stock = newStockString
                     notifyItemChanged(position)
                 }
 
+                // Show success message to user
                 Toast.makeText(
                     holder.itemView.context,
-                    "✓ ${medicine.medicineName} marked as taken at $currentTime",
+                    "${medicine.medicineName} marked as taken at $currentTime",
                     Toast.LENGTH_SHORT
                 ).show()
 
+                // Call callback to notify main screen (optional)
                 onMedicineStatusChanged?.invoke()
             }
             .addOnFailureListener { e ->
-                Log.e("ReminderAdapter", "Failed to update status: ${e.message}", e)
+                // If update failed
+                Log.e("ReminderAdapter", "Failed to update: ${e.message}", e)
                 Toast.makeText(
                     holder.itemView.context,
                     "Failed to update: ${e.message}",

@@ -11,36 +11,37 @@ import com.example.mednot.R
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 
-// This activity shows a list of all medicines and allows the user to edit or delete them
+// This screen shows all the medicines the user has.
+// The user can edit or delete each medicine from here.
 class Check_Med_Stock : AppCompatActivity() {
 
-    private lateinit var firebaseAuth: FirebaseAuth     // Firebase Authentication instance
-    private lateinit var db: FirebaseFirestore         // Firestore database instance
-    private lateinit var containerLayout: LinearLayout // The layout container that holds medicine cards
+    private lateinit var firebaseAuth: FirebaseAuth     // Used to check the logged-in user
+    private lateinit var db: FirebaseFirestore          // Used to connect to Firestore database
+    private lateinit var containerLayout: LinearLayout  // Layout that will show all medicine cards
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.user_check_med_stock) // Set the UI layout for this activity
+        setContentView(R.layout.user_check_med_stock) // Set the layout for this screen
 
-        firebaseAuth = FirebaseAuth.getInstance()      // Initialize FirebaseAuth
-        db = FirebaseFirestore.getInstance()           // Initialize Firestore
-        containerLayout = findViewById(R.id.containerStockList) // Get reference to LinearLayout
+        firebaseAuth = FirebaseAuth.getInstance()      // Initialize Firebase Authentication
+        db = FirebaseFirestore.getInstance()           // Initialize Firestore database
+        containerLayout = findViewById(R.id.containerStockList) // Get reference to layout that holds cards
 
-        loadMedicines() // Load medicines from Firestore
+        loadMedicines() // Load the medicines when the screen starts
     }
 
-    // Function to load all medicines for the current user
+    // This function gets all medicines from Firestore for the logged-in user
     fun loadMedicines() {
-        val uid = firebaseAuth.currentUser?.uid ?: return // Get current user's ID
+        val uid = firebaseAuth.currentUser?.uid ?: return // Get current user's ID, or stop if not logged in
 
         db.collection("medicines")
             .whereEqualTo("userId", uid) // Only get medicines that belong to this user
             .get()
             .addOnSuccessListener { result ->
 
-                containerLayout.removeAllViews() // Clear old medicine views
+                containerLayout.removeAllViews() // Remove old cards before adding new ones
 
-                // If no medicines found, show a message
+                // If no medicines are found, show a message
                 if (result.isEmpty) {
                     val emptyText = TextView(this)
                     emptyText.text = "No medicines found."
@@ -50,54 +51,49 @@ class Check_Med_Stock : AppCompatActivity() {
                     return@addOnSuccessListener
                 }
 
-                // Loop through all medicines and create a card for each
+                // Go through all the medicines and make a card for each one
                 for (doc in result) {
                     val docId = doc.id
                     val medName = doc.getString("medicineName") ?: "Unknown"
-                    // val quantity = doc.getString("quantity") ?: "0" // <- REMOVED
                     val remaining = doc.getString("stock") ?: "0"
                     val dosage = doc.getString("dosage") ?: ""
                     val dosageUnit = doc.getString("dosageUnit") ?: ""
 
-                    // Inflate the medicine card layout
+                    // Create (inflate) a card layout from XML
                     val cardView = layoutInflater.inflate(R.layout.item_checkstock, containerLayout, false)
 
-                    // Bind data to UI elements in the card
+                    // Get the text views in the card and fill them with data
                     val tvMedName = cardView.findViewById<TextView>(R.id.tvMedName)
-                    // val tvQuantity = cardView.findViewById<TextView>(R.id.tvQuantity) // <- REMOVED
                     val tvRemaining = cardView.findViewById<TextView>(R.id.tvRemaining)
                     val tvDosage = cardView.findViewById<TextView>(R.id.tvDosage)
-                    // val tvLastUpdated = cardView.findViewById<TextView>(R.id.tvLastUpdated) // <- REMOVED
 
                     tvMedName.text = medName
-                    // tvQuantity.text = "Quantity: $quantity" // <- REMOVED
                     tvRemaining.text = "Remaining: $remaining"
                     tvDosage.text = "Dosage: $dosage $dosageUnit"
-                    // tvLastUpdated.text = "Last Updated: $lastUpdate" // <- REMOVED (and was bugged)
 
-                    // --- Button Logic ---
+                    // Get the buttons from the card
                     val btnEdit = cardView.findViewById<Button>(R.id.btnEditStock)
                     val btnDelete = cardView.findViewById<Button>(R.id.btnDeleteStock)
 
-                    // Edit button opens Edit_Med_Stock activity with medicine ID
+                    // When Edit is clicked, open the Edit_Med_Stock screen
                     btnEdit.setOnClickListener {
                         val intent = Intent(this, Edit_Med_Stock::class.java)
                         intent.putExtra("MEDICINE_ID", docId)
                         startActivity(intent)
-                        Toast.makeText(this, "Edit: $medName (ID: $docId)", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(this, "Editing: $medName", Toast.LENGTH_SHORT).show()
                     }
 
-                    // Delete button deletes the medicine from Firestore
+                    // When Delete is clicked, remove the medicine from Firestore
                     btnDelete.setOnClickListener {
                         deleteMedicine(docId)
                     }
 
-                    // Add the card to the container layout
+                    // Add the card to the screen
                     containerLayout.addView(cardView)
                 }
             }
             .addOnFailureListener { e ->
-                // Show error message if loading fails
+                // Show an error message if loading fails
                 containerLayout.removeAllViews()
                 val errorText = TextView(this)
                 errorText.text = "Failed to load medicines: ${e.message}"
@@ -107,20 +103,20 @@ class Check_Med_Stock : AppCompatActivity() {
             }
     }
 
-    // Function to delete a medicine document from Firestore
+    // This function deletes a medicine from Firestore by its document ID
     private fun deleteMedicine(docId: String) {
         db.collection("medicines").document(docId)
             .delete()
             .addOnSuccessListener {
                 Toast.makeText(this, "Medicine deleted", Toast.LENGTH_SHORT).show()
-                loadMedicines() // Refresh the list after deletion
+                loadMedicines() // Reload the list after deleting
             }
             .addOnFailureListener { e ->
                 Toast.makeText(this, "Error deleting medicine: ${e.message}", Toast.LENGTH_LONG).show()
             }
     }
 
-    // Refresh the list when returning from Edit_Med_Stock activity
+    // When returning to this screen (like after editing), reload the list
     override fun onResume() {
         super.onResume()
         loadMedicines()
